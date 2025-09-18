@@ -20,6 +20,8 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { ReactQueryDevtools } from "@/lib/devtools"
 import ct from "@constants"
 
+import { Button } from "../ui/button"
+
 import AppSidebar from "./AppSidebar"
 import DevelopmentToolButton from "./DevelopmentToolButton"
 import EventsHistorySheet from "./sheets/EventsHistorySheet"
@@ -28,7 +30,6 @@ import ThreadSettingsSheet from "./sheets/ThreadSettingsSheet"
 import ViewGraphSheet from "./sheets/ViewGraphSheet"
 import ViewMemorySheet from "./sheets/ViewMemorySheet"
 import ViewStateSheet from "./sheets/ViewStateSheet"
-import { Button } from "../ui/button"
 
 /**
  * MainLayout component renders the main application layout with sidebar, header, and content area.
@@ -100,20 +101,26 @@ const MainLayout = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <DevelopmentToolButton
-                icon={Eye}
-                tooltip="View State"
-                handleActivate={() => handleSheetOpen("state")}
-                isActive={activeSheet === "state"}
-                disabled={!isVerified}
-              />
-              <DevelopmentToolButton
-                icon={Database}
-                tooltip="View Memory"
-                handleActivate={() => handleSheetOpen("memory")}
-                isActive={activeSheet === "memory"}
-                disabled={!isVerified}
-              />
+              {isThreadPage && (
+                <DevelopmentToolButton
+                  icon={Eye}
+                  tooltip="View State"
+                  handleActivate={() => handleSheetOpen("state")}
+                  isActive={activeSheet === "state"}
+                  disabled={!isVerified}
+                />
+              )}
+
+              {isThreadPage && (
+                <DevelopmentToolButton
+                  icon={Database}
+                  tooltip="View Memory"
+                  handleActivate={() => handleSheetOpen("memory")}
+                  isActive={activeSheet === "memory"}
+                  disabled={!isVerified}
+                />
+              )}
+
               <DevelopmentToolButton
                 icon={GitGraph}
                 tooltip="View Graph"
