@@ -44,7 +44,8 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
   const [localStreamingResponse, setLocalStreamingResponse] = useState(false)
   const [localRecursionLimit, setLocalRecursionLimit] = useState(0)
 
-  const [localResponseGranularity, setLocalResponseGranularity] = useState("low")
+  const [localResponseGranularity, setLocalResponseGranularity] =
+    useState("low")
   const [localIncludeRaw, setLocalIncludeRaw] = useState(false)
 
   useEffect(() => {

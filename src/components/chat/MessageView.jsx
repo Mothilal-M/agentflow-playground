@@ -39,7 +39,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { sendMessage as sendMessageThunk, stopStreaming } from "@/services/store/slices/chat.slice"
+import {
+  sendMessage as sendMessageThunk,
+  stopStreaming,
+} from "@/services/store/slices/chat.slice"
 
 /**
  * Message component renders individual chat messages with modern design
