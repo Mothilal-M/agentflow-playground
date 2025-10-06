@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // src/setupTests.js
 
 import "@testing-library/jest-dom/vitest"

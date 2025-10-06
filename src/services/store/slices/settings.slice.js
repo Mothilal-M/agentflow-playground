@@ -9,7 +9,7 @@ export const testPingEndpoint = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const result = await pingBackend()
-      console.log("#SDT Ping Result:", result)
+      console.debug("#SDT Ping Result:", result)
       return result
     } catch (error) {
       console.error("#SDT Ping error:", error.message)

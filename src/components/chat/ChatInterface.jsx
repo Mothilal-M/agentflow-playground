@@ -33,7 +33,7 @@ const ChatInterface = ({ className }) => {
       // If no active thread, create a new one
       if (!activeThread) {
         const newThread = dispatch(
-          createThread({ title: message.slice(0, 50) + "..." })
+          createThread({ title: `${message.slice(0, 50)}...` })
         )
         const threadId = newThread.payload.id || Date.now().toString()
 

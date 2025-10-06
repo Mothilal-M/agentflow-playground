@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const SETTINGS_STORAGE_KEY = "pyagenity-settings"
 const PARSE_ERROR_MESSAGE = "Failed to parse saved settings:"
 

@@ -14,7 +14,7 @@ import {
 import storage from "redux-persist/lib/storage"
 
 // app constants
-import ct from "@/lib/constants/redux.constant"
+import ct from "@constants/"
 import rootReducer from "./reducers"
 // import * as Sentry from '@sentry/react'
 

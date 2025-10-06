@@ -10,6 +10,5 @@ export const queryClient = new QueryClient({
 })
 
 export const asyncStoragePersister = createAsyncStoragePersister({
-  // eslint-disable-next-line no-undef
   storage: window.localStorage,
 })

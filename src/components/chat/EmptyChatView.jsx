@@ -2,9 +2,10 @@ import { Send, Sparkles, Paperclip } from "lucide-react"
 import PropTypes from "prop-types"
 import { useState, useRef } from "react"
 import { useSelector } from "react-redux"
+
+import { ShineBorder } from "@/components/magicui/shine-border"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ShineBorder } from "@/components/magicui/shine-border"
 import ct from "@constants/"
 
 /**
@@ -13,7 +14,7 @@ import ct from "@constants/"
  */
 const EmptyChatView = ({ onNewChat, onSendMessage }) => {
   const [message, setMessage] = useState("")
-  const fileInputRef = useRef(null)
+  const fileInputReference = useRef(null)
 
   const store = useSelector((state) => state[ct.store.SETTINGS_STORE])
 
@@ -26,11 +27,11 @@ const EmptyChatView = ({ onNewChat, onSendMessage }) => {
   }
 
   const handleFileAttach = () => {
-    fileInputRef.current?.click()
+    fileInputReference.current?.click()
   }
 
   const handleFileChange = (e) => {
-    const files = e.target.files
+    const { files } = e.target
     if (files && files.length > 0) {
       // Start new chat with file attachment
       onNewChat()
@@ -97,7 +98,7 @@ const EmptyChatView = ({ onNewChat, onSendMessage }) => {
                       <Paperclip className="w-4 h-4 text-muted-foreground" />
                     </Button>
                     <input
-                      ref={fileInputRef}
+                      ref={fileInputReference}
                       type="file"
                       multiple
                       accept=".pdf,.doc,.docx,.txt,.csv,.json"

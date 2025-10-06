@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import PropTypes from "prop-types"
 import { createContext, useContext, useEffect, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
