@@ -16,6 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
 import {
   setThreadId,
@@ -154,180 +155,186 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
           <SheetDescription>View and edit the thread details</SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto py-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Overview</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Context Details </Label>
-                <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                  <p>Total Messages: {threadSettings.context_total_messages}</p>
-                  <p>Total Tokens: {threadSettings.context_total_tokens}</p>
+        <ScrollArea className="flex-1 pr-4 pb-6">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Overview</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Context Details </Label>
+                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                    <p>
+                      Total Messages: {threadSettings.context_total_messages}
+                    </p>
+                    <p>Total Tokens: {threadSettings.context_total_tokens}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Statistics </Label>
-                <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                  <p>Total Token: {threadSettings.total_token}</p>
-                  <p>Total Tool Calls: {threadSettings.total_tool_calls}</p>
-                  <p>
-                    Total Human Messages: {threadSettings.total_human_messages}
-                  </p>
-                  <p>Total AI Messages: {threadSettings.total_ai_messages}</p>
+                <div className="space-y-2">
+                  <Label>Statistics </Label>
+                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                    <p>Total Token: {threadSettings.total_token}</p>
+                    <p>Total Tool Calls: {threadSettings.total_tool_calls}</p>
+                    <p>
+                      Total Human Messages:{" "}
+                      {threadSettings.total_human_messages}
+                    </p>
+                    <p>Total AI Messages: {threadSettings.total_ai_messages}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <div>
-            Modify the thread details below. <br />
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Changes are saved automatically, These fields will be shared with
-              invoke/stream api calls. Only use when necessary.
-            </span>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="thread-id">Thread ID</Label>
-            <Input
-              id="thread-id"
-              type="text"
-              value={localThreadId}
-              onChange={(event) =>
-                handleFieldChange("threadId", event.target.value)
-              }
-              className="w-full"
-            />
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Unique identifier for this thread
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="thread-title">Thread Title</Label>
-            <Input
-              id="thread-title"
-              type="text"
-              value={localTitle}
-              onChange={(event) =>
-                handleFieldChange("title", event.target.value)
-              }
-              className="w-full"
-            />
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Display name for this conversation thread
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="streaming-response">Streaming Response</Label>
-            <input
-              id="streaming-response"
-              type="checkbox"
-              className="ml-2"
-              checked={localStreamingResponse}
-              onChange={(event) =>
-                handleFieldChange("streamingResponse", event.target.checked)
-              }
-            />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Enable streaming response
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="response-granularity">Response Granularity</Label>
-            <select
-              id="response-granularity"
-              className="w-full border rounded p-2 bg-background"
-              value={localResponseGranularity}
-              onChange={(event) =>
-                handleFieldChange("responseGranularity", event.target.value)
-              }
-            >
-              <option value="full">Full</option>
-              <option value="partial">Partial</option>
-              <option value="low">Low</option>
-            </select>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Controls verbosity of the API response
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="include-raw">Include Raw</Label>
-            <input
-              id="include-raw"
-              type="checkbox"
-              className="ml-2"
-              checked={localIncludeRaw}
-              onChange={(event) =>
-                handleFieldChange("includeRaw", event.target.checked)
-              }
-            />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Include raw data in responses
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="recursion-limit">
-              Recursion Limit{" "}
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                (Maximum recursion depth)
+              </CardContent>
+            </Card>
+            <div>
+              Modify the thread details below. <br />
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Changes are saved automatically, These fields will be shared
+                with invoke/stream api calls. Only use when necessary.
               </span>
-            </Label>
-            <Input
-              id="recursion-limit"
-              type="number"
-              value={localRecursionLimit}
-              onChange={(event) =>
-                handleFieldChange("recursionLimit", event.target.value)
-              }
-              className="w-full"
-            />
-          </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="thread-id">Thread ID</Label>
+              <Input
+                id="thread-id"
+                type="text"
+                value={localThreadId}
+                onChange={(event) =>
+                  handleFieldChange("threadId", event.target.value)
+                }
+                className="w-full"
+              />
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Unique identifier for this thread
+              </p>
+            </div>
 
-          <div className="space-y-2">
-            <Label>
-              Config{" "}
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                (JSON, optional, will pass with the request)
-              </span>
-            </Label>
-            <textarea
-              value={localConfig}
-              onChange={(event) =>
-                handleFieldChange("config", event.target.value)
-              }
-              className="w-full h-32 p-2 border rounded resize-none"
-              placeholder="Enter JSON config"
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="thread-title">Thread Title</Label>
+              <Input
+                id="thread-title"
+                type="text"
+                value={localTitle}
+                onChange={(event) =>
+                  handleFieldChange("title", event.target.value)
+                }
+                className="w-full"
+              />
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Display name for this conversation thread
+              </p>
+            </div>
 
-          <div className="space-y-2">
-            <Label>
-              Initial State{" "}
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                (JSON, optional, will pass with the request)
-              </span>{" "}
-              <br />
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                Only use when you want to override the main state, for example,
-                you want to control which node to be executed next, or pass
-                fresh data in every API call for any field of the main state.
-              </span>
-            </Label>
-            <textarea
-              value={localInitState}
-              onChange={(event) =>
-                handleFieldChange("initState", event.target.value)
-              }
-              className="w-full h-32 p-2 border rounded resize-none"
-              placeholder="Enter JSON init state"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="streaming-response">Streaming Response</Label>
+              <input
+                id="streaming-response"
+                type="checkbox"
+                className="ml-2"
+                checked={localStreamingResponse}
+                onChange={(event) =>
+                  handleFieldChange("streamingResponse", event.target.checked)
+                }
+              />
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Enable streaming response
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="response-granularity">Response Granularity</Label>
+              <select
+                id="response-granularity"
+                className="w-full border rounded p-2 bg-background"
+                value={localResponseGranularity}
+                onChange={(event) =>
+                  handleFieldChange("responseGranularity", event.target.value)
+                }
+              >
+                <option value="full">Full</option>
+                <option value="partial">Partial</option>
+                <option value="low">Low</option>
+              </select>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Controls verbosity of the API response
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="include-raw">Include Raw</Label>
+              <input
+                id="include-raw"
+                type="checkbox"
+                className="ml-2"
+                checked={localIncludeRaw}
+                onChange={(event) =>
+                  handleFieldChange("includeRaw", event.target.checked)
+                }
+              />
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Include raw data in responses
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="recursion-limit">
+                Recursion Limit{" "}
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  (Maximum recursion depth)
+                </span>
+              </Label>
+              <Input
+                id="recursion-limit"
+                type="number"
+                value={localRecursionLimit}
+                onChange={(event) =>
+                  handleFieldChange("recursionLimit", event.target.value)
+                }
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Config{" "}
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  (JSON, optional, will pass with the request)
+                </span>
+              </Label>
+              <textarea
+                value={localConfig}
+                onChange={(event) =>
+                  handleFieldChange("config", event.target.value)
+                }
+                className="w-full h-32 p-2 border rounded resize-none"
+                placeholder="Enter JSON config"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Initial State{" "}
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  (JSON, optional, will pass with the request)
+                </span>{" "}
+                <br />
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  Only use when you want to override the main state, for
+                  example, you want to control which node to be executed next,
+                  or pass fresh data in every API call for any field of the main
+                  state.
+                </span>
+              </Label>
+              <textarea
+                value={localInitState}
+                onChange={(event) =>
+                  handleFieldChange("initState", event.target.value)
+                }
+                className="w-full h-32 p-2 border rounded resize-none"
+                placeholder="Enter JSON init state"
+              />
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   )
