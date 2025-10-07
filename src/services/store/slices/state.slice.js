@@ -71,13 +71,17 @@ const stateSlice = createSlice({
         // this api will return current state schema, which we can use to update our state
         // state.state = action.payload
         const { data } = action.payload.data
+        // reset state
+        // state.state = initialState.state
+        // if data has properties
+
         // get properties from data properties
         const properties = data.properties || {}
         // check except context, context_summary and execution_meta
         // what are available add those in the state
         Object.keys(properties).forEach((key) => {
           if (!["context", "context_summary", "execution_meta"].includes(key)) {
-            state[key] = properties[key]
+            state.state[key] = properties[key]
           }
         })
         state.isLoading = false

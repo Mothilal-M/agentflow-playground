@@ -10,14 +10,14 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "@/components/ui/use-toast"
+import { fetchStateScheme } from "@/services/store/slices/state.slice"
 import ct from "@constants"
 import {
   setSettings,
   testPingEndpoint,
   testGraphEndpoint,
 } from "@store/slices/settings.slice"
-
-import { toast } from "../ui/use-toast"
 
 // Zod validation schema
 const settingsSchema = z.object({
@@ -58,13 +58,14 @@ const ConfigurationCard = ({ onStartChat = null }) => {
   })
 
   const handleFormSubmit = (data) => {
-    console.warn("#SDT Handle Form Submit called with data:", data)
     dispatch(setSettings(data))
-    console.warn("#SDT setSettings dispatched")
     dispatch(testPingEndpoint())
-    console.warn("#SDT testPingEndpoint dispatched")
     // second dispatch graph
     dispatch(testGraphEndpoint())
+
+    // fetch state schema
+    dispatch(fetchStateScheme())
+
     // here
     if (onStartChat) {
       onStartChat(data)

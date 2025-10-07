@@ -28,6 +28,7 @@ import {
   testGraphEndpoint,
 } from "@/services/store/slices/settings.slice"
 import ct from "@constants"
+import { fetchStateScheme } from "@store/slices/state.slice"
 
 // Zod validation schema
 const settingsSchema = z.object({
@@ -95,6 +96,9 @@ const useSettingsForm = (isOpen, onClose) => {
 
     // Dispatch graph endpoint test
     dispatch(testGraphEndpoint())
+
+    // Get state schema
+    dispatch(fetchStateScheme())
   }
 
   const handleCancel = () => {

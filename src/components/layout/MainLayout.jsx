@@ -26,10 +26,10 @@ import AppSidebar from "./AppSidebar"
 import DevelopmentToolButton from "./DevelopmentToolButton"
 import EventsHistorySheet from "./sheets/EventsHistorySheet"
 import SettingsSheet from "./sheets/SettingsSheet"
+import ViewStateSheet from "./sheets/state"
 import ThreadSettingsSheet from "./sheets/ThreadSettingsSheet"
 import ViewGraphSheet from "./sheets/ViewGraphSheet"
 import ViewMemorySheet from "./sheets/ViewMemorySheet"
-import ViewStateSheet from "./sheets/ViewStateSheet"
 
 /**
  * MainLayout component renders the main application layout with sidebar, header, and content area.
@@ -48,6 +48,7 @@ const MainLayout = () => {
 
   // Check if we're on a thread page
   const isThreadPage = location.pathname.startsWith("/chat/") && threadId
+  const isChatPage = location.pathname.startsWith("/chat")
 
   // Get thread data from Redux store
   const threadData = threadId
@@ -101,7 +102,7 @@ const MainLayout = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              {isThreadPage && (
+              {isChatPage && (
                 <DevelopmentToolButton
                   icon={Eye}
                   tooltip="View State"
@@ -111,7 +112,7 @@ const MainLayout = () => {
                 />
               )}
 
-              {isThreadPage && (
+              {isChatPage && (
                 <DevelopmentToolButton
                   icon={Database}
                   tooltip="View Memory"
