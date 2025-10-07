@@ -165,26 +165,21 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
                   words means 1K Tokens
                 </span>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
+              <CardContent className="space-y-2">
+                <div>
                   <Label>Context Details </Label>
-                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                    <p>
-                      Total Messages: {threadSettings.context_total_messages}
-                    </p>
-                    <p>Total Tokens: {threadSettings.context_total_tokens}</p>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <p>Messages: {threadSettings.context_total_messages}</p>
+                    <p>Tokens: {threadSettings.context_total_tokens}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Statistics </Label>
-                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                    <p>Total Token: {threadSettings.total_token}</p>
-                    <p>Total Tool Calls: {threadSettings.total_tool_calls}</p>
-                    <p>
-                      Total Human Messages:{" "}
-                      {threadSettings.total_human_messages}
-                    </p>
-                    <p>Total AI Messages: {threadSettings.total_ai_messages}</p>
+                  <Label>Statistics (Total)</Label>
+                  <div className="text-sm text-slate-600 dark:text-slate-400 grid grid-cols-2 gap-2">
+                    <p>Token: {threadSettings.total_token}</p>
+                    <p>Tool Calls: {threadSettings.total_tool_calls}</p>
+                    <p>User Messages: {threadSettings.total_human_messages}</p>
+                    <p>AI Messages: {threadSettings.total_ai_messages}</p>
                   </div>
                 </div>
               </CardContent>
