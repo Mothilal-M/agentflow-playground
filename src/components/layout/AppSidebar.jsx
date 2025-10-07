@@ -1,4 +1,4 @@
-import ThreadList from "@/components/chat/ThreadList"
+import ThreadList from "@/pages/chat/component/ThreadList"
 import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar"
 
 /**

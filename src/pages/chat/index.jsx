@@ -1,4 +1,4 @@
-import ChatContent from "@/components/chat/ChatContent"
+import ChatContent from "@/pages/chat/component/ChatContent"
 
 /**
  * Chat page component renders the chat content area

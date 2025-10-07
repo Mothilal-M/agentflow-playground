@@ -8,8 +8,8 @@ import {
 } from "@/services/store/slices/chat.slice"
 import ct from "@constants/"
 
-import EmptyChatView from "./EmptyChatView"
-import MessageView from "./MessageView"
+import EmptyChatView from "./empty"
+import MessageView from "./full/MessageView"
 
 /**
  * ChatContent component provides the main chat content area (right side)
