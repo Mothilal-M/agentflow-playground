@@ -18,8 +18,8 @@ const MessageList = ({ messages, isLoading, toolCalls }) => {
   }, [messages, isLoading])
 
   return (
-    <ScrollArea className="flex-1 p-4">
-      <div className="space-y-1">
+    <ScrollArea className="h-full w-full">
+      <div className="space-y-1 p-4">
         {messages.map((message) => (
           <Message key={message.id} message={message} />
         ))}

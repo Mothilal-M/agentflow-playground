@@ -102,7 +102,7 @@ const ChatInput = ({ onSendMessage, disabled, isLoading, onStop }) => {
   const hasContent = message.trim() || attachments.length > 0
 
   return (
-    <div className="border-t bg-background p-4">
+    <div className="pl-10 pr-10">
       <FileAttachmentsPreview
         attachments={attachments}
         onRemove={handleRemoveAttachment}

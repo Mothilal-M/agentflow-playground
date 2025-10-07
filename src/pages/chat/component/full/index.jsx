@@ -71,19 +71,22 @@ const FullMessageUI = ({ thread }) => {
   }, [toast])
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950">
-      <MessageList
-        messages={thread?.messages || []}
-        isLoading={isLoading}
-        toolCalls={toolCalls}
-      />
-
-      <ChatInput
-        onSendMessage={handleSendMessage}
-        disabled={isLoading}
-        isLoading={isLoading}
-        onStop={handleStop}
-      />
+    <div className="flex flex-col w-full h-full">
+      <div className="flex-1 overflow-hidden">
+        <MessageList
+          messages={thread?.messages || []}
+          isLoading={isLoading}
+          toolCalls={toolCalls}
+        />
+      </div>
+      <div className="shrink-0">
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          disabled={isLoading}
+          isLoading={isLoading}
+          onStop={handleStop}
+        />
+      </div>
     </div>
   )
 }

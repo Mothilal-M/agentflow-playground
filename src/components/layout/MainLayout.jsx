@@ -67,7 +67,7 @@ const MainLayout = () => {
       <SidebarProvider>
         <AppSidebar />
 
-        <main className="min-h-screen w-full">
+        <main className="flex flex-col h-screen w-full">
           <div className="sticky top-0 z-50 w-full dark:shadow-secondary flex items-center p-4 bg-white dark:bg-[#020817] border-b dark:border-slate-800">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
@@ -160,7 +160,7 @@ const MainLayout = () => {
               </div>
             </div>
           </div>
-          <div className="p-6">
+          <div className="flex-1 overflow-hidden p-6">
             <Outlet />
           </div>
           <ViewStateSheet
