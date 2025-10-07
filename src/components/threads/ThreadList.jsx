@@ -1,10 +1,11 @@
-import { MessageSquarePlus, MoreHorizontal, Trash2 } from "lucide-react"
+import { MessageSquarePlus, MoreVertical, Trash2 } from "lucide-react"
 import PropTypes from "prop-types"
 import { useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,25 +40,26 @@ const formatDate = (dateString) => {
 
 // ThreadItem component to handle individual thread rendering
 const ThreadItem = ({ thread, isActive, onSelect, onDelete }) => (
-  <button
-    type="button"
+  <Card
     className={`group relative flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors hover:bg-accent w-full text-left ${
       isActive ? "bg-accent text-accent-foreground" : ""
     }`}
     onClick={() => onSelect(thread.id)}
   >
     <div className="flex-1 min-w-0">
-      <div className="flex items-center justify-between mb-1">
-        <h3 className="text-sm font-medium truncate pr-2">{thread.title}</h3>
-        <span className="text-xs text-muted-foreground flex-shrink-0">
+      <h3 className="text-sm font-medium truncate">
+        {thread.title.slice(0, 30)}
+      </h3>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground truncate flex-1">
+          {thread.messages.length > 0
+            ? thread.messages[thread.messages.length - 1].content.slice(0, 30)
+            : "No messages yet"}
+        </p>
+        <span className="text-xs text-muted-foreground ml-2">
           {formatDate(thread.updatedAt)}
         </span>
       </div>
-      <p className="text-xs text-muted-foreground truncate">
-        {thread.messages.length > 0
-          ? thread.messages[thread.messages.length - 1].content.slice(0, 30)
-          : "No messages yet"}
-      </p>
     </div>
 
     <DropdownMenu>
@@ -65,10 +67,10 @@ const ThreadItem = ({ thread, isActive, onSelect, onDelete }) => (
         <Button
           variant="ghost"
           size="icon"
-          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={(event) => event.stopPropagation()}
         >
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -81,7 +83,7 @@ const ThreadItem = ({ thread, isActive, onSelect, onDelete }) => (
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  </button>
+  </Card>
 )
 
 const ThreadList = ({ className }) => {
@@ -137,13 +139,9 @@ const ThreadList = ({ className }) => {
   return (
     <div className={cn("flex flex-col h-full", className)}>
       <div className="flex items-center justify-between p-2 flex-shrink-0">
-        <button
-          type="button"
-          className="text-lg font-semibold ml-2 hover:underline"
-          onClick={handleNavigateToChat}
-        >
+        <Button variant="ghost" onClick={handleNavigateToChat}>
           Chats
-        </button>
+        </Button>
         <Button
           variant="ghost"
           size="icon"
