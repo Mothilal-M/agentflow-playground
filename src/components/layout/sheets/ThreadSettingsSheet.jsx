@@ -160,6 +160,10 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
             <Card>
               <CardHeader>
                 <CardTitle>Overview</CardTitle>
+                <span className="text-xs text-slate-500">
+                  Note: Token calculation is based on number of words, where 750
+                  words means 1K Tokens
+                </span>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
