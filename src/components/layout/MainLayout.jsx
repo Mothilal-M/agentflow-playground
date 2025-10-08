@@ -12,7 +12,6 @@ import { useSelector } from "react-redux"
 import { Outlet, useLocation, useParams } from "react-router-dom"
 
 import ModeToggle from "@/components/layout/header/ThemeSwitch"
-import { SparklesText } from "@/components/magicui/sparkles-text"
 import { Separator } from "@/components/ui/separator"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toaster"
@@ -80,9 +79,7 @@ const MainLayout = () => {
                 role="button"
                 aria-label="Go to home page"
               >
-                <SparklesText className="text-lg">
-                  PyAgenity Playground
-                </SparklesText>
+                <span className="text-lg font-bold">PyAgenity Playground</span>
               </span>
             </div>
 
