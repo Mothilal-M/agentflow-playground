@@ -11,6 +11,8 @@ import {
   FileText,
   Copy,
   Code,
+  Settings,
+  AlertCircle,
 } from "lucide-react"
 import PropTypes from "prop-types"
 import { useState, useRef, useEffect, useCallback } from "react"
@@ -599,7 +601,7 @@ const MessageInput = ({
 /**
  * Main MessageView component with all modern features
  */
-const MessageView = ({ thread }) => {
+const MessageView = ({ thread, disabled = false }) => {
   const dispatch = useDispatch()
   const generatingMap = useSelector((state) => state.chatStore.generating)
   const messagesEndRef = useRef(null)
@@ -613,10 +615,10 @@ const MessageView = ({ thread }) => {
 
   const handleSendMessage = useCallback(
     async (content) => {
-      if (!content.trim()) return
+      if (!content.trim() || disabled) return
       await dispatch(sendMessageThunk(thread.id, content))
     },
-    [dispatch, thread.id]
+    [dispatch, thread.id, disabled]
   )
 
   const handleStopGeneration = useCallback(() => {
@@ -625,6 +627,23 @@ const MessageView = ({ thread }) => {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Warning banner when disabled */}
+      {disabled && (
+        <div className="flex-shrink-0 p-3 bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800">
+          <div className="flex items-start gap-2 max-w-4xl mx-auto">
+            <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-amber-800 dark:text-amber-200">
+              <p className="font-medium mb-1">
+                Backend URL is not configured properly
+              </p>
+              <p className="text-xs">
+                Use <code className="bg-amber-100 dark:bg-amber-900 px-1.5 py-0.5 rounded">?backendUrl=YOUR_URL</code> in the URL or click the{" "}
+                <Settings className="h-3 w-3 inline mx-0.5" /> Settings icon to configure
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Messages area */}
       <ScrollArea className="flex-1">
         <div className="min-h-full">
@@ -640,7 +659,7 @@ const MessageView = ({ thread }) => {
       {/* Input area */}
       <MessageInput
         onSendMessage={handleSendMessage}
-        disabled={isTyping}
+        disabled={isTyping || disabled}
         isGenerating={isGenerating}
         onStopGeneration={handleStopGeneration}
       />
@@ -672,6 +691,11 @@ MessageView.propTypes = {
     title: PropTypes.string.isRequired,
     messages: PropTypes.array.isRequired,
   }).isRequired,
+  disabled: PropTypes.bool,
+}
+
+MessageView.defaultProps = {
+  disabled: false,
 }
 
 export default MessageView

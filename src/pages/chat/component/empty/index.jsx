@@ -1,5 +1,5 @@
 // import { Sparkles } from "lucide-react"
-import { Sparkles } from "lucide-react"
+import { Sparkles, Settings, AlertCircle } from "lucide-react"
 import PropTypes from "prop-types"
 import { useState, useRef } from "react"
 import { useSelector } from "react-redux"
@@ -10,7 +10,7 @@ import EmptyInputCard from "./EmptyInputCard"
  * EmptyChatView component displays when no thread is selected or active thread has no messages
  * Styled to match Claude's clean and modern empty state design
  */
-const EmptyChatUI = ({ onNewChat, onSendMessage }) => {
+const EmptyChatUI = ({ onNewChat, onSendMessage, disabled = false }) => {
   const [message, setMessage] = useState("")
   const fileInputReference = useRef(null)
   const store = useSelector((state) => state?.settings)
@@ -19,7 +19,7 @@ const EmptyChatUI = ({ onNewChat, onSendMessage }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (message.trim()) {
+    if (message.trim() && !disabled) {
       onSendMessage?.(message.trim())
       setMessage("")
     }
@@ -47,12 +47,28 @@ const EmptyChatUI = ({ onNewChat, onSendMessage }) => {
               <Sparkles className="w-6 h-6 text-white" />
             </span>
             <h1 className="text-3xl font-semibold text-foreground">
-              {store?.name && store.name.length > 0 ? store.name : "PyAgenity"}
+              {store?.name && store.name.length > 0 ? store.name : "AgentFlow"}
             </h1>
           </div>
           <p className="text-base text-muted-foreground">
             Powered by AI Intelligence
           </p>
+          {disabled && (
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg max-w-md">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-amber-800 dark:text-amber-200">
+                  <p className="font-medium mb-1">
+                    Backend URL is not configured properly
+                  </p>
+                  <p className="text-xs">
+                    Use <code className="bg-amber-100 dark:bg-amber-900 px-1.5 py-0.5 rounded">?backendUrl=YOUR_URL</code> in the URL or click the{" "}
+                    <Settings className="h-3 w-3 inline mx-0.5" /> Settings icon to configure
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <EmptyInputCard
           onHandleSubmit={handleSubmit}
@@ -60,6 +76,7 @@ const EmptyChatUI = ({ onNewChat, onSendMessage }) => {
           setMessage={setMessage}
           onHandleFileChange={handleFileChange}
           fileInputReference={fileInputReference}
+          disabled={disabled}
         />
       </div>
     </div>
@@ -69,6 +86,11 @@ const EmptyChatUI = ({ onNewChat, onSendMessage }) => {
 EmptyChatUI.propTypes = {
   onNewChat: PropTypes.func.isRequired,
   onSendMessage: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+}
+
+EmptyChatUI.defaultProps = {
+  disabled: false,
 }
 
 export default EmptyChatUI

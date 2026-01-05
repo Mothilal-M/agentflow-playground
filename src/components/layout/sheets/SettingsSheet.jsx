@@ -32,10 +32,7 @@ import { fetchStateScheme } from "@store/slices/state.slice"
 
 // Zod validation schema
 const settingsSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(50, "Name must be less than 50 characters"),
+  name: z.string().optional(),
   backendUrl: z
     .string()
     .url("Please enter a valid URL")
@@ -78,10 +75,10 @@ const useSettingsForm = (isOpen, onClose) => {
 
   // Handle form submission with verification
   const onSubmit = async (data) => {
-    if (!data.backendUrl || !data.name) {
+    if (!data.backendUrl) {
       toast({
         title: "Missing Information",
-        description: "Please provide both backend URL and agent name",
+        description: "Please provide a backend URL",
         variant: "destructive",
       })
       return
@@ -176,23 +173,6 @@ const SettingsSheet = ({ isOpen, onClose }) => {
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-6 pb-6">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Agent Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Agent name"
-                  {...register("name")}
-                  className="w-full"
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-500">{errors.name.message}</p>
-                )}
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Enter your display name
-                </p>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="backend-url">Backend URL</Label>
                 <Input

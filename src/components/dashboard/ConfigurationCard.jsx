@@ -21,10 +21,7 @@ import {
 
 // Zod validation schema
 const settingsSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(50, "Name must be less than 50 characters"),
+  name: z.string().optional(),
   backendUrl: z
     .string()
     .url("Please enter a valid URL")
@@ -74,7 +71,7 @@ const ConfigurationCard = ({ onStartChat = null }) => {
 
   const handleStartChat = () => {
     if (isVerified) {
-      navigate("/chat")
+      navigate("/")
     } else {
       toast("Please setup and verify your agent configuration")
     }

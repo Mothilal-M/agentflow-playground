@@ -39,14 +39,17 @@ import ViewMemorySheet from "./sheets/ViewMemorySheet"
 const MainLayout = () => {
   const [activeSheet, setActiveSheet] = useState(null)
   const location = useLocation()
-  const { threadId } = useParams()
   const store = useSelector((st) => st[ct.store.SETTINGS_STORE])
   const chatStore = useSelector((st) => st[ct.store.CHAT_STORE])
 
   const isVerified = store?.verification?.isVerified ?? false
 
-  // Check if we're on a thread page
-  const isChatPage = location.pathname.startsWith("/chat")
+  // Get threadId from URL search params (dashboard uses query params)
+  const searchParams = new URLSearchParams(location.search)
+  const threadId = searchParams.get("threadId") || chatStore.activeThreadId
+
+  // Check if we're on dashboard with an active thread (for showing thread-specific UI)
+  const isChatPage = location.pathname === "/" && threadId && isVerified
 
   // Get thread data from Redux store
   const threadData = threadId
@@ -78,7 +81,7 @@ const MainLayout = () => {
                 role="button"
                 aria-label="Go to home page"
               >
-                <span className="text-lg font-bold">PyAgenity Playground</span>
+                <span className="text-lg font-bold">AgentFlow Playground</span>
               </span>
             </div>
 
@@ -90,6 +93,7 @@ const MainLayout = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleSheetOpen("thread")}
+                    disabled={!isVerified}
                   >
                     <MessageSquare className="h-4 w-4" /> Thread Details
                   </Button>
@@ -151,7 +155,7 @@ const MainLayout = () => {
                     rel="noopener noreferrer"
                     className="underline"
                   >
-                    PyAgenity
+                    AgentFlow
                   </a>
                 </span>
               </div>

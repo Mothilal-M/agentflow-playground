@@ -2,7 +2,7 @@ import { MessageSquarePlus, MoreVertical, Trash2 } from "lucide-react"
 import PropTypes from "prop-types"
 import { useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -89,7 +89,11 @@ const ThreadItem = ({ thread, isActive, onSelect, onDelete }) => (
 const ThreadList = ({ className }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { threadId } = useParams()
+  const location = useLocation()
+  
+  // Get threadId from URL search params
+  const searchParams = new URLSearchParams(location.search)
+  const threadId = searchParams.get("threadId")
 
   const { threads, activeThreadId } = useSelector(
     (state) => state[ct.store.CHAT_STORE]
@@ -107,29 +111,30 @@ const ThreadList = ({ className }) => {
 
   const handleNewChatClick = () => {
     const newThread = dispatch(createThread({ title: "New Chat" }))
-    navigate(`/chat/${newThread.payload.id || Date.now().toString()}`)
+    const newId = newThread.payload.id || Date.now().toString()
+    dispatch(setActiveThread(newId))
+    navigate(`/?threadId=${newId}`)
   }
 
   const handleSelectThread = (id) => {
     dispatch(setActiveThread(id))
-    navigate(`/chat/${id}`)
+    navigate(`/?threadId=${id}`)
   }
 
   const handleDeleteThread = (id, event) => {
     event.stopPropagation()
     dispatch(deleteThread(id))
 
-    // Navigate to chat root if deleting current thread
+    // Navigate to dashboard root if deleting current thread
     if (threadId === id || activeThreadId === id) {
-      navigate("/chat")
+      dispatch(setActiveThread(null))
+      navigate("/")
     }
   }
 
   const handleNavigateToChat = () => {
-    // check we are not in the chat page
-    if (window.location.pathname !== "/chat") {
-      navigate("/chat")
-    }
+    // Navigate to dashboard (home page)
+    navigate("/")
   }
 
   const handleNewChatMaybe = () => {

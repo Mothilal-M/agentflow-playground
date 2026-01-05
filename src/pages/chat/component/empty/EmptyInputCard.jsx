@@ -11,6 +11,7 @@ const EmptyInputCard = ({
   setMessage,
   onHandleFileChange,
   fileInputReference,
+  disabled = false,
 }) => {
   const handleSubmit = onHandleSubmit
   const handleFileChange = onHandleFileChange
@@ -29,23 +30,35 @@ const EmptyInputCard = ({
             <textarea
               value={message}
               onChange={(event) => setMessage(event.target.value)}
-              placeholder="Type your message here to start a new chat..."
-              className="w-full min-h-[120px] max-h-[28vh] px-4 py-3 bg-[#181c2a] border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground text-base leading-relaxed transition-all"
+              placeholder={
+                disabled
+                  ? "Backend URL not verified. Configure in Settings to start chatting..."
+                  : "Type your message here to start a new chat..."
+              }
+              disabled={disabled}
+              className="w-full min-h-[120px] max-h-[28vh] px-4 py-3 bg-[#181c2a] border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground text-base leading-relaxed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
+                if (event.key === "Enter" && !event.shiftKey && !disabled) {
                   event.preventDefault()
                   handleSubmit(event)
                 }
               }}
             />
             <div className="flex items-center justify-between pt-1 border-t border-border bg-transparent">
-              <label className="cursor-pointer pl-2 rounded-md hover:bg-blue-950/30 transition flex items-center gap-2">
+              <label
+                className={`pl-2 rounded-md transition flex items-center gap-2 ${
+                  disabled
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer hover:bg-blue-950/30"
+                }`}
+              >
                 <input
                   ref={fileInputReference}
                   type="file"
                   multiple
                   accept=".pdf,.doc,.docx,.txt,.csv,.json"
                   onChange={handleFileChange}
+                  disabled={disabled}
                   className="hidden"
                 />
                 <Paperclip className="w-5 h-5 text-blue-400" />
@@ -54,8 +67,8 @@ const EmptyInputCard = ({
               <Button
                 type="submit"
                 size="md"
-                disabled={!message.trim()}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow transition-colors flex items-center gap-2 text-base font-semibold"
+                disabled={!message.trim() || disabled}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow transition-colors flex items-center gap-2 text-base font-semibold disabled:opacity-50"
               >
                 <Send className="w-5 h-5" />
                 Send
@@ -75,12 +88,14 @@ EmptyInputCard.propTypes = {
   onHandleFileChange: PropTypes.func,
   // ref can be a callback or an object created by useRef
   fileInputReference: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  disabled: PropTypes.bool,
 }
 
 EmptyInputCard.defaultProps = {
   message: "",
   onHandleFileChange: undefined,
   fileInputReference: null,
+  disabled: false,
 }
 
 export default EmptyInputCard

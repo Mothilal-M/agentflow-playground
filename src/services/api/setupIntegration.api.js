@@ -5,7 +5,7 @@ import api from "./index"
  * @returns {Promise<object>} - Ping result with status and response time
  */
 export const pingBackend = async () => {
-  return await api.get("v1/ping")
+  return await api.get("/ping")
 }
 
 /**
