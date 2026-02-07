@@ -28,6 +28,7 @@ import {
   setReadonlyData,
   setResponseGranularity,
   setIncludeRaw,
+  setContextMetadata,
 } from "@/services/store/slices/threadSettings.slice"
 
 /**
@@ -38,21 +39,16 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
   const dispatch = useDispatch()
   const threadSettings = useSelector((state) => state.threadSettingsStore)
 
-  const [localTitle, setLocalTitle] = useState("")
-  const [localThreadId, setLocalThreadId] = useState("")
+  // Only keep local state for JSON text input (for validation before parsing)
   const [localConfig, setLocalConfig] = useState("")
   const [localInitState, setLocalInitState] = useState("")
-  const [localStreamingResponse, setLocalStreamingResponse] = useState(false)
-  const [localRecursionLimit, setLocalRecursionLimit] = useState(0)
-
-  const [localResponseGranularity, setLocalResponseGranularity] =
-    useState("low")
-  const [localIncludeRaw, setLocalIncludeRaw] = useState(false)
 
   useEffect(() => {
     if (threadData) {
-      dispatch(setThreadId(threadId || ""))
-      dispatch(setThreadTitle(threadData.title || ""))
+      // Only update title if threadData has it, don't set thread_id automatically
+      if (threadData.title) {
+        dispatch(setThreadTitle(threadData.title))
+      }
       dispatch(
         setReadonlyData({
           total_messages: threadData.messages?.length || 0,
@@ -64,37 +60,27 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
         })
       )
     }
-  }, [threadData, threadId, dispatch])
+  }, [threadData, dispatch])
 
   useEffect(() => {
-    setLocalTitle(threadSettings.thread_title)
-    setLocalThreadId(threadSettings.thread_id)
     setLocalConfig(JSON.stringify(threadSettings.config, null, 2))
     setLocalInitState(JSON.stringify(threadSettings.init_state, null, 2))
-    setLocalStreamingResponse(threadSettings.streaming_response)
-    setLocalRecursionLimit(threadSettings.recursion_limit)
-    setLocalResponseGranularity(threadSettings.response_granularity || "low")
-    setLocalIncludeRaw(Boolean(threadSettings.include_raw))
-  }, [threadSettings])
+  }, [threadSettings.config, threadSettings.init_state])
 
   const handleFieldChange = (field, value) => {
     try {
       switch (field) {
         case "threadId":
-          setLocalThreadId(value)
           dispatch(setThreadId(value))
           break
         case "title":
-          setLocalTitle(value)
           dispatch(setThreadTitle(value))
           break
         case "streamingResponse":
-          setLocalStreamingResponse(value)
           dispatch(setStreamingResponse(value))
           break
         case "recursionLimit": {
           const limit = parseInt(value) || 0
-          setLocalRecursionLimit(limit)
           dispatch(setRecursionLimit(limit))
           break
         }
@@ -117,11 +103,9 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
           }
           break
         case "responseGranularity":
-          setLocalResponseGranularity(value)
           dispatch(setResponseGranularity(value))
           break
         case "includeRaw":
-          setLocalIncludeRaw(value)
           dispatch(setIncludeRaw(value))
           break
         default:
@@ -196,14 +180,15 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
               <Input
                 id="thread-id"
                 type="text"
-                value={localThreadId}
+                value={threadSettings.thread_id || ""}
                 onChange={(event) =>
                   handleFieldChange("threadId", event.target.value)
                 }
                 className="w-full"
+                placeholder="Leave empty for auto-generation"
               />
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Unique identifier for this thread
+                Unique identifier for this thread (auto-generated if empty)
               </p>
             </div>
 
@@ -212,11 +197,12 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
               <Input
                 id="thread-title"
                 type="text"
-                value={localTitle}
+                value={threadSettings.thread_title || ""}
                 onChange={(event) =>
                   handleFieldChange("title", event.target.value)
                 }
                 className="w-full"
+                placeholder="Enter thread title"
               />
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Display name for this conversation thread
@@ -229,7 +215,7 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
                 id="streaming-response"
                 type="checkbox"
                 className="ml-2"
-                checked={localStreamingResponse}
+                checked={threadSettings.streaming_response}
                 onChange={(event) =>
                   handleFieldChange("streamingResponse", event.target.checked)
                 }
@@ -244,7 +230,7 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
               <select
                 id="response-granularity"
                 className="w-full border rounded p-2 bg-background"
-                value={localResponseGranularity}
+                value={threadSettings.response_granularity || "low"}
                 onChange={(event) =>
                   handleFieldChange("responseGranularity", event.target.value)
                 }
@@ -264,7 +250,7 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
                 id="include-raw"
                 type="checkbox"
                 className="ml-2"
-                checked={localIncludeRaw}
+                checked={threadSettings.include_raw}
                 onChange={(event) =>
                   handleFieldChange("includeRaw", event.target.checked)
                 }
@@ -284,7 +270,7 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
               <Input
                 id="recursion-limit"
                 type="number"
-                value={localRecursionLimit}
+                value={threadSettings.recursion_limit}
                 onChange={(event) =>
                   handleFieldChange("recursionLimit", event.target.value)
                 }

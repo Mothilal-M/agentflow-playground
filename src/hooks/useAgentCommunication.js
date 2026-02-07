@@ -1,0 +1,174 @@
+/**
+ * Custom React hooks for Agent Communication
+ *
+ * Provides easy-to-use hooks for A2A and A2UI communication in React components.
+ */
+
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+/**
+ * Hook for A2UI WebSocket connection
+ */
+export function useAgentWebSocket(baseUrl, agentId, authToken = null) {
+  const [client, setClient] = useState(null);
+  const [connectionState, setConnectionState] = useState('disconnected');
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Dynamically import the client
+    import('@10xscale/agentflow-client').then((module) => {
+      const { A2UIClient } = module;
+
+      const newClient = new A2UIClient({
+        baseUrl,
+        agentId: agentId || '*',
+        authToken,
+        debug: true,
+      });
+
+      newClient.onConnectionChange((state) => {
+        setConnectionState(state);
+      });
+
+      newClient.onError((err) => {
+        setError(err);
+      });
+
+      newClient.connect();
+      setClient(newClient);
+    });
+
+    return () => {
+      if (client) {
+        client.disconnect();
+      }
+    };
+  }, [baseUrl, agentId, authToken]);
+
+  return {
+    client,
+    connectionState,
+    error,
+    isConnected: connectionState === 'connected',
+  };
+}
+
+/**
+ * Hook for agent status updates
+ */
+export function useAgentStatus(client) {
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    if (!client) return;
+
+    const handler = (message) => {
+      setStatus({
+        status: message.data.status,
+        message: message.data.message,
+        timestamp: message.timestamp,
+      });
+    };
+
+    client.on('AGENT_STATUS', handler);
+
+    return () => {
+      client.off('AGENT_STATUS', handler);
+    };
+  }, [client]);
+
+  return status;
+}
+
+/**
+ * Hook for agent messages
+ */
+export function useAgentMessages(client) {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    if (!client) return;
+
+    const handler = (message) => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          content: message.data.content,
+          role: message.data.role,
+          timestamp: message.timestamp,
+          message_id: message.data.message_id,
+        },
+      ]);
+    };
+
+    client.on('AGENT_MESSAGE', handler);
+
+    return () => {
+      client.off('AGENT_MESSAGE', handler);
+    };
+  }, [client]);
+
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+  }, []);
+
+  return { messages, clearMessages };
+}
+
+/**
+ * Hook for A2A client
+ */
+export function useA2AClient(baseUrl, authToken = null) {
+  const [client, setClient] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    import('@10xscale/agentflow-client').then((module) => {
+      const { A2AClient } = module;
+      const newClient = new A2AClient(baseUrl, authToken);
+      setClient(newClient);
+      setLoading(false);
+    });
+  }, [baseUrl, authToken]);
+
+  return { client, loading };
+}
+
+/**
+ * Hook for fetching active agents
+ */
+export function useActiveAgents(baseUrl, authToken = null, refreshInterval = 5000) {
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchAgents = useCallback(async () => {
+    try {
+      const headers = {};
+      if (authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+
+      const response = await fetch(`${baseUrl}/api/v1/agents`, { headers });
+      const data = await response.json();
+      setAgents(data.agents || []);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [baseUrl, authToken]);
+
+  useEffect(() => {
+    fetchAgents();
+
+    if (refreshInterval) {
+      const interval = setInterval(fetchAgents, refreshInterval);
+      return () => clearInterval(interval);
+    }
+  }, [fetchAgents, refreshInterval]);
+
+  return { agents, loading, error, refresh: fetchAgents };
+}
+

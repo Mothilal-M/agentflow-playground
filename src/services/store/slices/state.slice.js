@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { fetchStateSchema } from "@api/state.api"
+import { fetchStateSchema, fetchState, putState } from "@api/state.api"
 import ct from "@constants/"
 
 // list of messages
@@ -8,6 +8,7 @@ import ct from "@constants/"
 // { message_id: 1, content: "Hello, world!", role: "user"}
 const initialState = {
   isLoading: false,
+  isSaving: false,
   error: null,
   state: {
     context: [],
@@ -33,6 +34,36 @@ export const fetchStateScheme = createAsyncThunk(
       return result
     } catch (error) {
       return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const fetchThreadState = createAsyncThunk(
+  "state/fetchThreadState",
+  async (threadId, { rejectWithValue }) => {
+    try {
+      if (!threadId) {
+        throw new Error("Thread ID is required")
+      }
+      const result = await fetchState(threadId)
+      return result
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to fetch thread state")
+    }
+  }
+)
+
+export const updateThreadState = createAsyncThunk(
+  "state/updateThreadState",
+  async ({ threadId, state, config }, { rejectWithValue }) => {
+    try {
+      if (!threadId) {
+        throw new Error("Thread ID is required")
+      }
+      const result = await putState(threadId, { state, config })
+      return result
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to update thread state")
     }
   }
 )
@@ -63,9 +94,10 @@ const stateSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Ping endpoint async thunk
+      // Fetch state schema
       .addCase(fetchStateScheme.pending, (state) => {
         state.isLoading = true
+        state.error = null
       })
       .addCase(fetchStateScheme.fulfilled, (state, action) => {
         // this api will return current state schema, which we can use to update our state
@@ -89,6 +121,46 @@ const stateSlice = createSlice({
       .addCase(fetchStateScheme.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload || "Fetch failed"
+      })
+      // Fetch thread state
+      .addCase(fetchThreadState.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchThreadState.fulfilled, (state, action) => {
+        const { data } = action.payload
+        if (data && typeof data === "object") {
+          // Merge fetched state with existing state
+          state.state = {
+            ...state.state,
+            ...data,
+          }
+        }
+        state.isLoading = false
+      })
+      .addCase(fetchThreadState.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload || "Failed to fetch thread state"
+      })
+      // Update thread state
+      .addCase(updateThreadState.pending, (state) => {
+        state.isSaving = true
+        state.error = null
+      })
+      .addCase(updateThreadState.fulfilled, (state, action) => {
+        state.isSaving = false
+        // Optionally update local state with server response
+        const { data } = action.payload
+        if (data && typeof data === "object") {
+          state.state = {
+            ...state.state,
+            ...data,
+          }
+        }
+      })
+      .addCase(updateThreadState.rejected, (state, action) => {
+        state.isSaving = false
+        state.error = action.payload || "Failed to update thread state"
       })
   },
 })

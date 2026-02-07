@@ -1,101 +1,143 @@
-import api from "./index"
+import { Message } from "@10xscale/agentflow-client"
 
+import { getAgentFlowClient } from "@/lib/agentflowClient"
+
+/**
+ * Invoke graph with messages
+ * @param {object} body - GraphInputSchema-compatible payload
+ * @returns {Promise<object>} - Response with messages
+ */
 export const invokeGraph = async (body) => {
-  // body should conform to GraphInputSchema (see openapi.json)
-  return await api.post("/v1/graph/invoke", body)
+  const client = getAgentFlowClient()
+
+  // Convert body.messages to Message objects if they're not already
+  const messages = (body.messages || []).map((message) => {
+    // If already a Message object, use it
+    if (message instanceof Message) {
+      return message
+    }
+    // If it's a plain object, convert to Message
+    if (typeof message.content === "string") {
+      return Message.text_message(
+        message.content,
+        message.role || "user",
+        message.message_id || null
+      )
+    }
+    // If content is an array (ContentBlock[]), create Message directly
+    return new Message(
+      message.role || "user",
+      message.content || [],
+      message.message_id || null
+    )
+  })
+
+  const result = await client.invoke(messages, {
+    initial_state: body.initial_state,
+    config: body.config,
+    recursion_limit: body.recursion_limit,
+    response_granularity: body.response_granularity,
+  })
+
+  // Transform to match existing response format and include meta
+  return {
+    messages: result.messages || [],
+    state: result.state,
+    context: result.context,
+    summary: result.summary,
+    meta: result.meta || {},
+    all_messages: result.all_messages || [],
+    iterations: result.iterations || 0,
+    recursion_limit_reached: result.recursion_limit_reached || false,
+  }
 }
 
 /**
- * Stream graph execution using Fetch to handle streaming response
- * Note: Axios in browsers does not currently support streaming responses well
+ * Stream graph execution using client library
  * @param {object} body GraphInputSchema-compatible payload
  * @param {*} [signal] optional abort signal to cancel streaming
  * @yields {object} parsed JSON objects per line/chunk
  */
 export async function* streamGraph(body, signal) {
-  const baseURL = resolveBaseUrl()
-  const auth = resolveAuthHeader()
-  const headers = auth ? { Authorization: auth } : {}
+  const client = getAgentFlowClient()
 
-  const response = await globalThis.fetch(`${baseURL}/v1/graph/stream`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      ...headers,
-    },
-    body: JSON.stringify(body),
-    signal,
+  // Convert body.messages to Message objects if they're not already
+  const messages = (body.messages || []).map((message) => {
+    // If already a Message object, use it
+    if (message instanceof Message) {
+      return message
+    }
+    // If it's a plain object, convert to Message
+    if (typeof message.content === "string") {
+      return Message.text_message(
+        message.content,
+        message.role || "user",
+        message.message_id || null
+      )
+    }
+    // If content is an array (ContentBlock[]), create Message directly
+    return new Message(
+      message.role || "user",
+      message.content || [],
+      message.message_id || null
+    )
   })
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => "")
-    throw new Error(`Stream request failed: ${response.status} ${text}`)
+  const stream = client.stream(messages, {
+    initial_state: body.initial_state,
+    config: body.config,
+    recursion_limit: body.recursion_limit,
+    response_granularity: body.response_granularity,
+  })
+
+  // Handle abort signal
+  if (signal) {
+    signal.addEventListener("abort", () => {
+      // The client library should handle abort internally
+    })
   }
-  if (!response.body) {
-    const json = await response.json()
-    yield json
-    return
+
+  // Yield chunks in the format expected by the existing code
+  for await (const chunk of stream) {
+    // Transform chunk to match existing format and pass through metadata
+    if (chunk.event === "message" && chunk.message) {
+      yield {
+        data: {
+          message: chunk.message,
+          delta: chunk.message.delta
+            ? { content: extractTextFromMessage(chunk.message) }
+            : undefined,
+          metadata: chunk.metadata || {},
+        },
+      }
+    } else if (chunk.event === "updates" || chunk.event === "state") {
+      yield {
+        data: {
+          state: chunk.state,
+          updates: chunk.updates,
+          metadata: chunk.metadata || {},
+        },
+      }
+    } else {
+      yield {
+        data: {
+          ...chunk,
+          metadata: chunk.metadata || {},
+        },
+      }
+    }
   }
-
-  for await (const chunk of readNdjsonStream(response)) yield chunk
-}
-
-/** Resolve backend base URL from axios defaults or localStorage */
-function resolveBaseUrl() {
-  const { baseURL } = api.defaults
-  if (baseURL) return baseURL
-  const backendUrl = localStorage.getItem("backendUrl")
-  if (!backendUrl) throw new Error("Backend URL is not set")
-  return backendUrl.replace(/\/$/, "")
-}
-
-/** Resolve Authorization header value (e.g., "Bearer <token>") */
-function resolveAuthHeader() {
-  const auth = api.defaults.headers?.common?.Authorization
-  if (auth) return auth
-  const token = localStorage.getItem("authToken")
-  return token ? `Bearer ${token}` : undefined
 }
 
 /**
- * Read an NDJSON/JSON Lines streaming response and yield parsed JSON per line.
- * @param {*} response The fetch Response with a readable body
- * @yields {*} Parsed JSON object per line
+ * Extract text content from a Message object
  */
-async function* readNdjsonStream(response) {
-  const reader = response.body.getReader()
-  const decoder = new globalThis.TextDecoder()
-  let buffer = ""
-  try {
-    // Read stream chunks and split by newline
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split(/\r?\n/)
-      buffer = lines.pop() || ""
-      for (const line of lines) {
-        const trimmed = line.trim()
-        if (!trimmed) continue
-        try {
-          yield JSON.parse(trimmed)
-        } catch {
-          // ignore non-JSON lines
-        }
-      }
-    }
-    const rest = buffer.trim()
-    if (rest) {
-      try {
-        yield JSON.parse(rest)
-      } catch {
-        // ignore
-      }
-    }
-  } finally {
-    reader.releaseLock()
-  }
+function extractTextFromMessage(message) {
+  if (!message || !message.content) return ""
+  return message.content
+    .filter((block) => block.type === "text")
+    .map((block) => block.text)
+    .join("")
 }
 
 export default {

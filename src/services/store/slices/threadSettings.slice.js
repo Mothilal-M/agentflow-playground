@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit"
 import ct from "@constants/"
 
 const initialState = {
-  thread_id: "",
+  thread_id: null, // Will be null until set by user or API response
   thread_title: "",
   config: {},
   init_state: {},
@@ -79,6 +79,11 @@ const threadSettingsSlice = createSlice({
       state.total_human_messages = total_human_messages || 0
       state.total_ai_messages = total_ai_messages || 0
     },
+    setContextMetadata: (state, action) => {
+      const { total_messages, total_tokens } = action.payload
+      state.context_total_messages = total_messages || 0
+      state.context_total_tokens = total_tokens || 0
+    },
     resetThreadSettings: (state) => {
       Object.assign(state, initialState)
     },
@@ -99,6 +104,7 @@ export const {
   updateInitStateKey,
   removeInitStateKey,
   setReadonlyData,
+  setContextMetadata,
   resetThreadSettings,
 } = threadSettingsSlice.actions
 

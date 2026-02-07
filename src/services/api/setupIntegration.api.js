@@ -1,11 +1,17 @@
-import api from "./index"
+import { getAgentFlowClient } from "@/lib/agentflowClient"
 
 /**
  * Ping the backend to verify connectivity
  * @returns {Promise<object>} - Ping result with status and response time
  */
 export const pingBackend = async () => {
-  return await api.get("/ping")
+  const client = getAgentFlowClient()
+  const response = await client.ping()
+  // Transform to match existing response format
+  return {
+    data: response.data,
+    status: 200,
+  }
 }
 
 /**
@@ -13,5 +19,11 @@ export const pingBackend = async () => {
  * @returns {Promise<object>} - Graph data and metadata
  */
 export const fetchGraphData = async () => {
-  return await api.get("/v1/graph")
+  const client = getAgentFlowClient()
+  const response = await client.graph()
+  // Transform to match existing response format
+  return {
+    data: response.data,
+    status: 200,
+  }
 }

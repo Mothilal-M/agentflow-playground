@@ -39,7 +39,7 @@ const EmptyChatUI = ({ onNewChat, onSendMessage, disabled = false }) => {
   }
 
   return (
-    <div className="flex items-center justify-center h-screen w-full bg-gradient-to-b from-[#181c2a] via-[#23263a] to-[#181c2a]">
+    <div className="flex items-center justify-center h-screen w-full">
       <div className="flex flex-col items-center w-full max-w-xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-2 gap-2">

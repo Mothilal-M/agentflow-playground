@@ -1,7 +1,7 @@
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, Save } from "lucide-react"
 import PropTypes from "prop-types"
-import { useState } from "react"
-import { useSelector } from "react-redux"
+import { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -12,7 +12,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { useToast } from "@/components/ui/use-toast"
 import ct from "@constants/"
+import { fetchThreadState, updateThreadState } from "@/services/store/slices/state.slice"
 
 import AddMessageSheet from "./AddMessageSheet"
 import ContextMessagesSection from "./ContextMessagesSection"
@@ -30,7 +32,13 @@ import useFormData from "./useFormData"
  */
 // eslint-disable-next-line max-lines-per-function
 const ViewStateSheet = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch()
+  const { toast } = useToast()
   const stateData = useSelector((state) => state[ct.store.STATE_STORE].state)
+  const isLoading = useSelector((state) => state[ct.store.STATE_STORE].isLoading)
+  const isSaving = useSelector((state) => state[ct.store.STATE_STORE].isSaving)
+  const activeThreadId = useSelector((state) => state[ct.store.CHAT_STORE].activeThreadId)
+  
   const [isExecutionMetaOpen, setIsExecutionMetaOpen] = useState(false)
   const [isAddMessageOpen, setIsAddMessageOpen] = useState(false)
   const [newMessage, setNewMessage] = useState({
@@ -41,6 +49,13 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
 
   const { formData, updateField, addArrayItem, removeArrayItem } =
     useFormData(stateData)
+
+  // Fetch thread state when sheet opens and there's an active thread
+  useEffect(() => {
+    if (isOpen && activeThreadId) {
+      dispatch(fetchThreadState(activeThreadId))
+    }
+  }, [isOpen, activeThreadId, dispatch])
 
   const handleExecutionMetaOpenChange = (open) => {
     setIsExecutionMetaOpen(open)
@@ -66,10 +81,76 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
     }
   }
 
-  const handleSyncState = () => {
-    // TODO: Implement sync state functionality
-    console.warn("Syncing state...")
-    // This could refresh the state from the server or reset to initial state
+  const handleSyncState = async () => {
+    if (!activeThreadId) {
+      toast({
+        title: "No Active Thread",
+        description: "Please select or create a thread first",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      await dispatch(fetchThreadState(activeThreadId)).unwrap()
+      toast({
+        title: "State Synced",
+        description: "Successfully fetched latest state from server",
+      })
+    } catch (error) {
+      toast({
+        title: "Sync Failed",
+        description: error || "Failed to sync state from server",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleSaveState = async () => {
+    if (!activeThreadId) {
+      toast({
+        title: "No Active Thread",
+        description: "Please select or create a thread first",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      // Prepare state data to send to server
+      const stateToSave = {
+        context: formData.context || [],
+        context_summary: formData.context_summary || "",
+        execution_meta: formData.execution_meta || {},
+      }
+
+      // Add dynamic fields
+      const staticFields = ["context", "context_summary", "execution_meta"]
+      Object.keys(formData).forEach((key) => {
+        if (!staticFields.includes(key)) {
+          stateToSave[key] = formData[key]
+        }
+      })
+
+      await dispatch(
+        updateThreadState({
+          threadId: activeThreadId,
+          state: stateToSave,
+          config: {},
+        })
+      ).unwrap()
+
+      toast({
+        title: "State Saved",
+        description: "Successfully updated state on server",
+      })
+    } catch (error) {
+      toast({
+        title: "Save Failed",
+        description: error || "Failed to save state to server",
+        variant: "destructive",
+      })
+    }
   }
 
   // Wrapper functions for lint compliance (event handlers must start with 'handle')
@@ -134,15 +215,28 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
                   </SheetDescription>
                 </div>
               </div>
-              <Button
-                onClick={handleSyncState}
-                variant="outline"
-                size="sm"
-                className="bg-primary/5 hover:bg-primary/10 border-primary/20 hover:border-primary/30"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Sync State
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSyncState}
+                  variant="outline"
+                  size="sm"
+                  disabled={isLoading || !activeThreadId}
+                  className="bg-primary/5 hover:bg-primary/10 border-primary/20 hover:border-primary/30"
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+                  Sync
+                </Button>
+                <Button
+                  onClick={handleSaveState}
+                  variant="default"
+                  size="sm"
+                  disabled={isSaving || !activeThreadId}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save"}
+                </Button>
+              </div>
             </div>
           </SheetHeader>
 

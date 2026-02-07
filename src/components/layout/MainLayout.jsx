@@ -8,8 +8,8 @@ import {
   MessageSquare,
 } from "lucide-react"
 import { useState } from "react"
-import { useSelector } from "react-redux"
-import { Outlet, useLocation, useParams } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom"
 
 import ModeToggle from "@/components/layout/header/ThemeSwitch"
 import { Separator } from "@/components/ui/separator"
@@ -18,6 +18,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ReactQueryDevtools } from "@/lib/devtools"
 import ct from "@constants"
+
+import { setActiveThread } from "@/services/store/slices/chat.slice"
 
 import { Button } from "../ui/button"
 
@@ -38,6 +40,8 @@ import ViewMemorySheet from "./sheets/ViewMemorySheet"
 // eslint-disable-next-line max-lines-per-function
 const MainLayout = () => {
   const [activeSheet, setActiveSheet] = useState(null)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const location = useLocation()
   const store = useSelector((st) => st[ct.store.SETTINGS_STORE])
   const chatStore = useSelector((st) => st[ct.store.CHAT_STORE])
@@ -64,6 +68,12 @@ const MainLayout = () => {
     setActiveSheet(null)
   }
 
+  const handleGoHome = () => {
+    // Clear active thread and navigate to home page
+    dispatch(setActiveThread(null))
+    navigate("/")
+  }
+
   return (
     <TooltipProvider>
       <SidebarProvider>
@@ -76,7 +86,7 @@ const MainLayout = () => {
               {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
               <span
                 className="cursor-pointer"
-                onClick={() => (window.location.pathname = "/")}
+                onClick={handleGoHome}
                 tabIndex={0}
                 role="button"
                 aria-label="Go to home page"

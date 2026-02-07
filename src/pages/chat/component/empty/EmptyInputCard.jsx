@@ -18,7 +18,7 @@ const EmptyInputCard = ({
   // file attach is handled via the hidden input label
   return (
     <div className="w-full h-full flex items-center justify-center px-2">
-      <Card className="relative w-full max-w-xl mx-auto bg-gradient-to-br from-[#181c2a] via-[#23263a] to-[#1a1d2b] shadow-2xl rounded-2xl border border-[rgba(255,255,255,0.08)]">
+      <Card className="relative w-full max-w-xl mx-auto shadow-2xl rounded-2xl border border-[rgba(255,255,255,0.08)]">
         <ShineBorder
           shineColor={["#60A5FA", "#8B5CF6", "#F59E0B"]}
           borderWidth={1}
@@ -36,7 +36,7 @@ const EmptyInputCard = ({
                   : "Type your message here to start a new chat..."
               }
               disabled={disabled}
-              className="w-full min-h-[120px] max-h-[28vh] px-4 py-3 bg-[#181c2a] border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground text-base leading-relaxed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full min-h-[120px] max-h-[28vh] px-4 py-3 border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground text-base leading-relaxed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey && !disabled) {
                   event.preventDefault()

@@ -15,7 +15,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import {
-  createThread,
   deleteThread,
   setActiveThread,
 } from "@/services/store/slices/chat.slice"
@@ -110,15 +109,17 @@ const ThreadList = ({ className }) => {
   }, [threads])
 
   const handleNewChatClick = () => {
-    const newThread = dispatch(createThread({ title: "New Chat" }))
-    const newId = newThread.payload.id || Date.now().toString()
-    dispatch(setActiveThread(newId))
-    navigate(`/?threadId=${newId}`)
+    // Clear active thread and navigate to home page (empty state)
+    // The thread will be created when user sends the first message
+    dispatch(setActiveThread(null))
+    navigate("/")
   }
 
   const handleSelectThread = (id) => {
     dispatch(setActiveThread(id))
-    navigate(`/?threadId=${id}`)
+    // Navigate to home page (dashboard) without threadId in URL
+    // The Dashboard component will handle displaying the selected thread
+    navigate("/")
   }
 
   const handleDeleteThread = (id, event) => {
@@ -133,7 +134,8 @@ const ThreadList = ({ className }) => {
   }
 
   const handleNavigateToChat = () => {
-    // Navigate to dashboard (home page)
+    // Clear active thread and navigate to dashboard (home page)
+    dispatch(setActiveThread(null))
     navigate("/")
   }
 

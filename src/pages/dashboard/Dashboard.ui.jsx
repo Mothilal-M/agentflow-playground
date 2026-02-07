@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { useCallback, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useSearchParams } from "react-router-dom"
@@ -14,6 +13,7 @@ import {
   testGraphEndpoint,
 } from "@/services/store/slices/settings.slice"
 import { fetchStateScheme } from "@/services/store/slices/state.slice"
+import { setThreadId as setThreadSettingsId } from "@/services/store/slices/threadSettings.slice"
 import ct from "@constants"
 
 import EmptyChatUI from "../chat/component/empty"
@@ -21,7 +21,7 @@ import MessageView from "../chat/component/full/MessageView"
 
 const DashboardUI = () => {
   const dispatch = useDispatch()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParameters, setSearchParameters] = useSearchParams()
   const store = useSelector((st) => st[ct.store.SETTINGS_STORE])
   const { threads, activeThreadId } = useSelector(
     (state) => state[ct.store.CHAT_STORE]
@@ -31,8 +31,8 @@ const DashboardUI = () => {
   const isVerified = verification?.isVerified ?? false
 
   // Get backendUrl and threadId from URL query parameters
-  const urlBackendUrl = searchParams.get("backendUrl")
-  const urlThreadId = searchParams.get("threadId")
+  const urlBackendUrl = searchParameters.get("backendUrl")
+  const urlThreadId = searchParameters.get("threadId")
 
   // Auto-verify when backendUrl is provided via URL
   useEffect(() => {
@@ -52,11 +52,17 @@ const DashboardUI = () => {
       dispatch(fetchStateScheme())
 
       // Remove only backendUrl from query parameters, keep threadId if present
-      const newParams = new URLSearchParams(searchParams)
-      newParams.delete("backendUrl")
-      setSearchParams(newParams, { replace: true })
+      const newParameters = new URLSearchParams(searchParameters)
+      newParameters.delete("backendUrl")
+      setSearchParameters(newParameters, { replace: true })
     }
-  }, [urlBackendUrl, backendUrl, dispatch, setSearchParams, searchParams])
+  }, [
+    urlBackendUrl,
+    backendUrl,
+    dispatch,
+    setSearchParameters,
+    searchParameters,
+  ])
 
   // Handle threadId from URL parameter
   useEffect(() => {
@@ -65,12 +71,26 @@ const DashboardUI = () => {
       if (thread) {
         dispatch(setActiveThread(urlThreadId))
         // Remove threadId from URL after setting it
-        const newParams = new URLSearchParams(searchParams)
-        newParams.delete("threadId")
-        setSearchParams(newParams, { replace: true })
+        const newParameters = new URLSearchParams(searchParameters)
+        newParameters.delete("threadId")
+        setSearchParameters(newParameters, { replace: true })
       }
     }
-  }, [urlThreadId, activeThreadId, threads, dispatch, setSearchParams, searchParams])
+  }, [
+    urlThreadId,
+    activeThreadId,
+    threads,
+    dispatch,
+    setSearchParameters,
+    searchParameters,
+  ])
+
+  // Sync threadSettings with active thread
+  useEffect(() => {
+    if (activeThreadId) {
+      dispatch(setThreadSettingsId(activeThreadId))
+    }
+  }, [activeThreadId, dispatch])
 
   // Find the active thread - prioritize activeThreadId, then URL threadId
   const activeThread = activeThreadId

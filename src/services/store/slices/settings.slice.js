@@ -104,7 +104,9 @@ const settingsSlice = createSlice({
         state.verification.graphStep.status = "success"
         state.verification.graphStep.errorMessage = ""
         // also save the data in the state
-        state.graphData = action.payload.data.data
+        // The response format from client library is { data: {...}, metadata: {...} }
+        // We need to extract the graph data
+        state.graphData = action.payload.data?.graph || action.payload.data
         state.verification.isVerified =
           state.verification.pingStep.status === "success"
         state.verification.lastVerificationTime = new Date().toISOString()

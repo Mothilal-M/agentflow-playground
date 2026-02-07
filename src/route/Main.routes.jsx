@@ -1,4 +1,5 @@
 import { Navigate, useParams } from "react-router-dom"
+
 import ct from "@constants/"
 import Dashboard from "@pages/dashboard"
 
@@ -12,9 +13,9 @@ const mainRoutes = [
   { path: ct.route.ROOT, element: <Dashboard /> },
   // Redirect chat routes to dashboard
   { path: ct.route.CHAT, element: <Navigate to="/" replace /> },
-  { 
-    path: ct.route.CHAT_THREAD, 
-    element: <ChatThreadRedirect /> 
+  {
+    path: ct.route.CHAT_THREAD,
+    element: <ChatThreadRedirect />,
   },
 ]
 
