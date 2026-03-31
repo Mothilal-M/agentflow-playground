@@ -74,6 +74,14 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
   }
 
   const handleAddMessageOpenChange = (open) => {
+    if (!open) {
+      setNewMessage({
+        message_id: "",
+        role: "user",
+        content: "",
+      })
+    }
+
     setIsAddMessageOpen(open)
   }
 
@@ -89,7 +97,7 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
         role: "user",
         content: "",
       })
-      setIsAddMessageOpen(false)
+      handleAddMessageOpenChange(false)
     }
   }
 

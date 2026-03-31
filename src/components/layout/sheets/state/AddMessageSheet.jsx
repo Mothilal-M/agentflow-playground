@@ -15,21 +15,21 @@ import {
  * AddMessageSheet component provides a form to add new context messages
  * @param {object} props - Component props
  * @param {boolean} props.isOpen - Whether the sheet is open
- * @param {Function} props.handleOpenChange - Function to handle sheet open state changes
+ * @param {Function} props.onOpenChange - Function to handle sheet open state changes
  * @param {object} props.newMessage - The new message object being edited
  * @param {Function} props.onMessageChange - Function to handle message field changes
- * @param {Function} props.handleAddMessage - Function to handle adding the message
+ * @param {Function} props.onAddMessage - Function to handle adding the message
  * @returns {object} Sheet component with message form
  */
 const AddMessageSheet = ({
   isOpen,
-  handleOpenChange,
+  onOpenChange,
   newMessage,
   onMessageChange,
-  handleAddMessage,
+  onAddMessage,
 }) => {
   return (
-    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
+    <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[500px]">
         <SheetHeader>
           <SheetTitle>Add New Message</SheetTitle>
@@ -93,15 +93,17 @@ const AddMessageSheet = ({
 
           <div className="flex gap-3 pt-4">
             <Button
-              onClick={handleAddMessage}
+              type="button"
+              onClick={onAddMessage}
               disabled={!newMessage.content.trim()}
               className="flex-1"
             >
               Add Message
             </Button>
             <Button
+              type="button"
               variant="outline"
-              onClick={() => handleOpenChange(false)}
+              onClick={() => onOpenChange(false)}
               className="flex-1"
             >
               Cancel
@@ -115,10 +117,10 @@ const AddMessageSheet = ({
 
 AddMessageSheet.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  handleOpenChange: PropTypes.func.isRequired,
+  onOpenChange: PropTypes.func.isRequired,
   newMessage: PropTypes.object.isRequired,
   onMessageChange: PropTypes.func.isRequired,
-  handleAddMessage: PropTypes.func.isRequired,
+  onAddMessage: PropTypes.func.isRequired,
 }
 
 export default AddMessageSheet

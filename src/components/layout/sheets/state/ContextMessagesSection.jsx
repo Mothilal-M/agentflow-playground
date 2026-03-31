@@ -2,6 +2,7 @@ import { Plus } from "lucide-react"
 import PropTypes from "prop-types"
 
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
 import ContextMessage from "./ContextMessage"
