@@ -13,11 +13,6 @@ import { Label } from "@/components/ui/label"
 
 /**
  * ExecutionMetadataSection component displays execution metadata in a collapsible card
- * @param {object} props - Component props
- * @param {boolean} props.isOpen - Whether the collapsible section is open
- * @param {Function} props.onOpenChange - Function to handle open state changes
- * @param {object} props.executionMeta - The execution metadata object
- * @param {Function} props.handleUpdateField - Function to handle field updates
  * @returns {object} Collapsible card component with execution metadata
  */
 /* eslint-disable max-lines-per-function, complexity */

@@ -13,12 +13,6 @@ import {
 
 /**
  * AddMessageSheet component provides a form to add new context messages
- * @param {object} props - Component props
- * @param {boolean} props.isOpen - Whether the sheet is open
- * @param {Function} props.onOpenChange - Function to handle sheet open state changes
- * @param {object} props.newMessage - The new message object being edited
- * @param {Function} props.onMessageChange - Function to handle message field changes
- * @param {Function} props.onAddMessage - Function to handle adding the message
  * @returns {object} Sheet component with message form
  */
 const AddMessageSheet = ({

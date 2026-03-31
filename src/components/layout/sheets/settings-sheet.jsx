@@ -107,6 +107,7 @@ const useSettingsForm = (isOpen, onClose) => {
 
   const handleRetryVerification = () => {
     dispatch(resetVerification())
+    // eslint-disable-next-line react-hooks/incompatible-library
     const currentValues = watch()
     dispatch(setSettings(currentValues))
 

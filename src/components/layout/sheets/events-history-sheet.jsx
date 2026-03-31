@@ -10,9 +10,6 @@ import {
 
 /**
  * EventsHistorySheet component displays application events history
- * @param {object} props - Component props
- * @param {boolean} props.isOpen - Whether the sheet is open
- * @param {Function} props.onClose - Function to close the sheet
  * @returns {object} Sheet component displaying events history
  */
 const EventsHistorySheet = ({ isOpen, onClose }) => {

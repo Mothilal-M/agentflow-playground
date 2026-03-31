@@ -15,9 +15,6 @@ import ct from "@constants"
 /**
  * ViewGraphSheet component displays network graph visualization using Reagraph
  * Reads graph data directly from Redux store
- * @param {object} props - Component props
- * @param {boolean} props.isOpen - Whether the sheet is open
- * @param {Function} props.onClose - Function to close the sheet
  * @returns {object} Sheet component displaying network graph
  */
 const ViewGraphSheet = ({ isOpen, onClose }) => {

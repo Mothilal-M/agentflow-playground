@@ -6,11 +6,6 @@ import { Label } from "@/components/ui/label"
 
 /**
  * DynamicFieldsSection component displays dynamic fields from the schema
- * @param {object} props - Component props
- * @param {Array} props.dynamicFields - Array of dynamic field keys
- * @param {Function} props.getFieldInfo - Function to get field information
- * @param {object} props.formData - The form data object
- * @param {Function} props.handleUpdateField - Function to handle field updates
  * @returns {object} Array of Card components for dynamic fields
  */
 const DynamicFieldsSection = ({

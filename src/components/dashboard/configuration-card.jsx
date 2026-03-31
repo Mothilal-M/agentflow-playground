@@ -31,8 +31,6 @@ const settingsSchema = z.object({
 
 /**
  * ConfigurationCard component for dashboard setup
- * @param {object} props - Component props
- * @param {Function} props.onStartChat - Callback when Start Chat is clicked
  * @returns {object} Card component with configuration form
  */
 // eslint-disable-next-line max-lines-per-function

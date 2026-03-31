@@ -9,12 +9,6 @@ import {
 
 /**
  * DevelopmentToolButton component renders a development tool button with tooltip
- * @param {object} props - Component props
- * @param {Function} props.icon - Lucide icon component
- * @param {string} props.tooltip - Tooltip text to display
- * @param {Function} props.handleActivate - Function called when button is clicked
- * @param {boolean} props.isActive - Whether the button is currently active
- * @param {boolean} props.disabled - Whether the button is disabled
  * @returns {object} Development tool button with icon and tooltip
  */
 const DevelopmentToolButton = ({

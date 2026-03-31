@@ -6,9 +6,6 @@ import { Label } from "@/components/ui/label"
 
 /**
  * ContextSummarySection component displays the context summary field
- * @param {object} props - Component props
- * @param {string} props.contextSummary - The context summary value
- * @param {Function} props.onUpdateSummary - Function to handle summary updates
  * @returns {object} Card component with context summary textarea
  */
 const ContextSummarySection = ({ contextSummary, onUpdateSummary }) => {

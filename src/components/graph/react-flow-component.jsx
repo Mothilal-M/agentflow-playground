@@ -108,9 +108,6 @@ const _transformToReagraphFormat = (_graphData) => {
 
 /**
  * ReagraphComponent - Lightweight graph visualization using Reagraph
- * @param {object} props - Component props
- * @param {object} props.graphData - Graph data to visualize
- * @param {string} props.theme - Current theme (light/dark)
  * @returns {object} Reagraph canvas component
  */
 const ReFlowComponent = ({ graphData }) => {

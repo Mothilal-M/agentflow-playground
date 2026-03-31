@@ -9,10 +9,6 @@ import ContextMessage from "./ContextMessage"
 
 /**
  * ContextMessagesSection component displays the context messages array
- * @param {object} props - Component props
- * @param {Array} props.context - Array of context messages
- * @param {Function} props.handleAddMessage - Function to handle adding a new message
- * @param {Function} props.onRemoveMessage - Function to handle removing a message
  * @returns {object} Card component displaying context messages
  */
 const ContextMessagesSection = ({
