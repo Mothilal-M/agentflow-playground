@@ -1,11 +1,12 @@
 "use client"
 import { motion } from "motion/react"
-import { useEffect, useState } from "react"
 import PropTypes from "prop-types"
+import { useEffect, useState } from "react"
 
 import { cn } from "@/lib/utils"
 
-const Sparkle = ({ id, x, y, color, delay, scale }) => {  return (
+const Sparkle = ({ id, x, y, color, delay, scale }) => {
+  return (
     <motion.svg
       key={id}
       className="pointer-events-none absolute z-20"

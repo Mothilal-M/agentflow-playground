@@ -9,6 +9,7 @@ import { A2UIClient } from "@10xscale/agentflow-client"
 import PropTypes from "prop-types"
 import React, { useState, useEffect, useRef } from "react"
 
+// eslint-disable-next-line max-lines-per-function
 const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
   const [messages, setMessages] = useState([])
   const [thinking, setThinking] = useState(null)

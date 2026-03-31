@@ -10,6 +10,7 @@ import { A2UIClient } from "@10xscale/agentflow-client"
 import PropTypes from "prop-types"
 import React, { useState, useEffect } from "react"
 
+// eslint-disable-next-line max-lines-per-function, complexity
 const AgentDashboard = ({ baseUrl, authToken }) => {
   const [agents, setAgents] = useState([])
   const [loading, setLoading] = useState(true)

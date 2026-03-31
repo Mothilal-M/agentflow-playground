@@ -1,6 +1,6 @@
 "use client"
-import * as React from "react"
 import PropTypes from "prop-types"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -47,7 +47,10 @@ export const ShineBorder = ({
 ShineBorder.propTypes = {
   borderWidth: PropTypes.number,
   duration: PropTypes.number,
-  shineColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+  shineColor: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
   className: PropTypes.string,
   style: PropTypes.object,
 }
