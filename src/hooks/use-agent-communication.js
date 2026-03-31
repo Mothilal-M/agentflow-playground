@@ -19,29 +19,34 @@ export const useAgentWebSocket = (baseUrl, agentId, authToken = null) => {
     let isMounted = true
 
     // Dynamically import the client
-    import("@10xscale/agentflow-client").then((module) => {
-      const { A2UIClient } = module
+    import("@10xscale/agentflow-client")
+      .then((module) => {
+        const { A2UIClient } = module
 
-      if (!isMounted) return
+        if (!isMounted) return null
 
-      activeClient = new A2UIClient({
-        baseUrl,
-        agentId: agentId || "*",
-        authToken,
-        debug: true,
+        activeClient = new A2UIClient({
+          baseUrl,
+          agentId: agentId || "*",
+          authToken,
+          debug: true,
+        })
+
+        activeClient.onConnectionChange((state) => {
+          setConnectionState(state)
+        })
+
+        activeClient.onError((error_) => {
+          setError(error_)
+        })
+
+        activeClient.connect()
+        setClient(activeClient)
+        return null
       })
-
-      activeClient.onConnectionChange((state) => {
-        setConnectionState(state)
+      .catch((error_) => {
+        if (isMounted) setError(error_)
       })
-
-      activeClient.onError((error_) => {
-        setError(error_)
-      })
-
-      activeClient.connect()
-      setClient(activeClient)
-    })
 
     return () => {
       isMounted = false
@@ -64,7 +69,7 @@ export const useAgentStatus = (client) => {
   const [status, setStatus] = useState(null)
 
   useEffect(() => {
-    if (!client) return
+    if (!client) return undefined
 
     const handler = (message) => {
       setStatus({
@@ -91,7 +96,7 @@ export const useAgentMessages = (client) => {
   const [messages, setMessages] = useState([])
 
   useEffect(() => {
-    if (!client) return
+    if (!client) return undefined
 
     const handler = (message) => {
       setMessages((previous) => [
@@ -127,12 +132,17 @@ export const useA2AClient = (baseUrl, authToken = null) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    import("@10xscale/agentflow-client").then((module) => {
-      const { A2AClient } = module
-      const newClient = new A2AClient(baseUrl, authToken)
-      setClient(newClient)
-      setLoading(false)
-    })
+    import("@10xscale/agentflow-client")
+      .then((module) => {
+        const { A2AClient } = module
+        const newClient = new A2AClient(baseUrl, authToken)
+        setClient(newClient)
+        setLoading(false)
+        return null
+      })
+      .catch(() => {
+        setLoading(false)
+      })
   }, [baseUrl, authToken])
 
   return { client, loading }
@@ -175,6 +185,8 @@ export const useActiveAgents = (
       const interval = setInterval(fetchAgents, refreshInterval)
       return () => clearInterval(interval)
     }
+
+    return undefined
   }, [fetchAgents, refreshInterval])
 
   return { agents, loading, error, refresh: fetchAgents }

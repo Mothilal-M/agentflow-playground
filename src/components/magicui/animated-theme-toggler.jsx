@@ -4,7 +4,7 @@ import PropTypes from "prop-types"
 import { useRef } from "react"
 import { flushSync } from "react-dom"
 
-import { useTheme } from "@/lib/context/ThemeProvider"
+import { useTheme } from "@/lib/context/theme-provider"
 import { cn } from "@/lib/utils"
 
 export const AnimatedThemeToggler = ({ className }) => {

@@ -1,4 +1,4 @@
-import ThreadList from "@/components/threads/ThreadList"
+import ThreadList from "@/components/threads/thread-list"
 import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar"
 
 /**

@@ -23,13 +23,13 @@ import {
  */
 const AddMessageSheet = ({
   isOpen,
-  onOpenChange,
+  onOpenChange: handleOpenChange,
   newMessage,
   onMessageChange,
-  onAddMessage,
+  onAddMessage: handleAddMessage,
 }) => {
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange}>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetContent side="right" className="w-[500px]">
         <SheetHeader>
           <SheetTitle>Add New Message</SheetTitle>
@@ -94,7 +94,7 @@ const AddMessageSheet = ({
           <div className="flex gap-3 pt-4">
             <Button
               type="button"
-              onClick={onAddMessage}
+              onClick={handleAddMessage}
               disabled={!newMessage.content.trim()}
               className="flex-1"
             >
@@ -103,7 +103,7 @@ const AddMessageSheet = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
               className="flex-1"
             >
               Cancel

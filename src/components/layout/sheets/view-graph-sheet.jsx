@@ -1,8 +1,8 @@
 import PropTypes from "prop-types"
 import { useSelector } from "react-redux"
 
-import GraphInfoPanel from "@/components/graph/GraphInfoPanel"
-import ReFlowComponent from "@/components/graph/ReactFlowComponent"
+import GraphInfoPanel from "@/components/graph/graph-info-panel"
+import ReFlowComponent from "@/components/graph/react-flow-component"
 import {
   Sheet,
   SheetContent,

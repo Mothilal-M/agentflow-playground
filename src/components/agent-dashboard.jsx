@@ -5,7 +5,9 @@
  * capabilities, and recent activity.
  */
 
+// eslint-disable-next-line import/named
 import { A2UIClient } from "@10xscale/agentflow-client"
+import PropTypes from "prop-types"
 import React, { useState, useEffect } from "react"
 
 const AgentDashboard = ({ baseUrl, authToken }) => {
@@ -180,6 +182,27 @@ const AgentCard = ({ agent }) => {
       </div>
     </div>
   )
+}
+
+AgentCard.propTypes = {
+  agent: PropTypes.shape({
+    agent_name: PropTypes.string,
+    agent_id: PropTypes.string,
+    status: PropTypes.string,
+    agent_type: PropTypes.string,
+    capabilities: PropTypes.arrayOf(PropTypes.string),
+    registered_at: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    last_heartbeat: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }).isRequired,
+}
+
+AgentDashboard.propTypes = {
+  baseUrl: PropTypes.string.isRequired,
+  authToken: PropTypes.string,
+}
+
+AgentDashboard.defaultProps = {
+  authToken: null,
 }
 
 export default AgentDashboard

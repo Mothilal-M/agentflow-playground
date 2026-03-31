@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
-import { useTheme } from "@/lib/context/ThemeProvider"
+import { useTheme } from "@/lib/context/theme-provider"
 
 /**
  * ModeToggle component allows users to switch between light and dark themes.

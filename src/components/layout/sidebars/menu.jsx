@@ -10,10 +10,10 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip"
-import { getMenuList } from "@/lib/menuList"
+import { getMenuList } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
 
-import CollapseMenuButton from "./CollapseMenuButton"
+import CollapseMenuButton from "./collapse-menu-button"
 
 /**
  * Menu sidebar navigation component.

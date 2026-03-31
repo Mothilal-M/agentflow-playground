@@ -13,7 +13,7 @@ import {
 import { toggleSidebar } from "@/services/store/slices/theme.slice"
 import ct from "@constants/"
 
-import Menu from "./Menu"
+import Menu from "./menu"
 
 /**
  * SheetMenu component for rendering the sidebar menu in a sheet.

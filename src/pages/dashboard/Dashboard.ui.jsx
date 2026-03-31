@@ -14,7 +14,7 @@ import {
   testGraphEndpoint,
 } from "@/services/store/slices/settings.slice"
 import { fetchStateScheme } from "@/services/store/slices/state.slice"
-import { setThreadId as setThreadSettingsId } from "@/services/store/slices/threadSettings.slice"
+import { setThreadId as setThreadSettingsId } from "@/services/store/slices/thread-settings.slice"
 import ct from "@constants"
 
 import EmptyChatUI from "../chat/component/empty"

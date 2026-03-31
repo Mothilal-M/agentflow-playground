@@ -1,4 +1,4 @@
-import { getAgentFlowClient } from "@/lib/agentflowClient"
+import { getAgentFlowClient } from "@/lib/agentflow-client"
 
 /**
  * Put messages into a thread (store messages)

@@ -13,34 +13,34 @@ import {
  */
 const ChatInputForm = ({
   message,
-  onMessageChange,
-  onKeyDown,
-  onSubmit,
+  onMessageChange: handleMessageChange,
+  onKeyDown: handleKeyDown,
+  onSubmit: handleSubmit,
   isDragOver,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-  onFileButtonClick,
+  onDragOver: handleDragOver,
+  onDragLeave: handleDragLeave,
+  onDrop: handleDrop,
+  onFileButtonClick: handleFileButtonClick,
   disabled,
   isLoading,
-  onStopClick,
+  onStopClick: handleStopClick,
   hasContent,
 }) => (
-  <form onSubmit={onSubmit}>
+  <form onSubmit={handleSubmit}>
     <InputGroup
       className={`transition-colors ${
         isDragOver ? "border-primary bg-primary/5" : ""
       }`}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       <InputGroupAddon>
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          onClick={onFileButtonClick}
+          onClick={handleFileButtonClick}
           disabled={disabled}
         >
           <Paperclip className="w-4 h-4" />
@@ -49,8 +49,8 @@ const ChatInputForm = ({
 
       <InputGroupTextarea
         value={message}
-        onChange={onMessageChange}
-        onKeyDown={onKeyDown}
+        onChange={handleMessageChange}
+        onKeyDown={handleKeyDown}
         placeholder={
           isDragOver
             ? "Drop files here..."
@@ -66,7 +66,7 @@ const ChatInputForm = ({
             type="button"
             variant="destructive"
             size="icon"
-            onClick={onStopClick}
+            onClick={handleStopClick}
           >
             <Square className="w-4 h-4" />
           </Button>

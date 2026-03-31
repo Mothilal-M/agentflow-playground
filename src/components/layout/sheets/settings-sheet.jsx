@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 import { useSelector, useDispatch } from "react-redux"
 import { z } from "zod"
 
-import VerificationStepper from "@/components/setup/VerificationStepper"
+import VerificationStepper from "@/components/setup/verification-stepper"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

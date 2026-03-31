@@ -12,7 +12,7 @@ import PropTypes from "prop-types"
 import { useState, useRef } from "react"
 import { useSelector } from "react-redux"
 
-import EmptyInputCard from "./EmptyInputCard"
+import EmptyInputCard from "./empty-input-card"
 
 const SUGGESTIONS = [
   {

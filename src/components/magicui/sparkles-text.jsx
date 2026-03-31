@@ -1,11 +1,11 @@
 "use client"
 import { motion } from "motion/react"
 import { useEffect, useState } from "react"
+import PropTypes from "prop-types"
 
 import { cn } from "@/lib/utils"
 
-const Sparkle = ({ id, x, y, color, delay, scale }) => {
-  return (
+const Sparkle = ({ id, x, y, color, delay, scale }) => {  return (
     <motion.svg
       key={id}
       className="pointer-events-none absolute z-20"
@@ -26,6 +26,15 @@ const Sparkle = ({ id, x, y, color, delay, scale }) => {
       />
     </motion.svg>
   )
+}
+
+Sparkle.propTypes = {
+  id: PropTypes.string.isRequired,
+  x: PropTypes.string.isRequired,
+  y: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+  delay: PropTypes.number.isRequired,
+  scale: PropTypes.number.isRequired,
 }
 
 export const SparklesText = ({
@@ -89,4 +98,14 @@ export const SparklesText = ({
       </span>
     </div>
   )
+}
+
+SparklesText.propTypes = {
+  children: PropTypes.node.isRequired,
+  colors: PropTypes.shape({
+    first: PropTypes.string,
+    second: PropTypes.string,
+  }),
+  className: PropTypes.string,
+  sparklesCount: PropTypes.number,
 }

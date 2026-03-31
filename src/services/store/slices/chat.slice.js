@@ -16,7 +16,7 @@ import {
   setContextMetadata,
   setThreadId as setThreadSettingsId,
   setThreadTitle as setThreadSettingsTitle,
-} from "./threadSettings.slice"
+} from "./thread-settings.slice"
 
 const MESSAGE_KIND = {
   USER: "user",

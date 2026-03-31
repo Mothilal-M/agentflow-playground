@@ -4,8 +4,8 @@ import { useState, useCallback, useRef } from "react"
 
 import { useToast } from "@/components/ui/use-toast"
 
-import ChatInputForm from "./ChatInputForm"
-import FileAttachmentsPreview from "./FileAttachmentsPreview"
+import ChatInputForm from "./chat-input-form"
+import FileAttachmentsPreview from "./file-attachments-preview"
 
 /**
  * Chat input component with file attachments

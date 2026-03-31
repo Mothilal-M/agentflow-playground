@@ -19,11 +19,11 @@ import {
 } from "@/services/store/slices/state.slice"
 import ct from "@constants/"
 
-import AddMessageSheet from "./AddMessageSheet"
-import ContextMessagesSection from "./ContextMessagesSection"
-import ContextSummarySection from "./ContextSummarySection"
-import DynamicFieldsSection from "./DynamicFieldsSection"
-import ExecutionMetadataSection from "./ExecutionMetadataSection"
+import AddMessageSheet from "./add-message-sheet"
+import ContextMessagesSection from "./context-messages-section"
+import ContextSummarySection from "./context-summary-section"
+import DynamicFieldsSection from "./dynamic-fields-section"
+import ExecutionMetadataSection from "./execution-metadata-section"
 import useFormData from "./useFormData"
 
 /**

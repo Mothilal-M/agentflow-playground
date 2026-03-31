@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import { Provider } from "react-redux"
 import { describe, expect, it } from "vitest"
 
-import threadSettingsReducer from "@/services/store/slices/threadSettings.slice"
+import threadSettingsReducer from "@/services/store/slices/thread-settings.slice"
 
 import Message from "./MessageComponent"
 

@@ -3,8 +3,8 @@ import { useState, useCallback } from "react"
 
 import { useToast } from "@/components/ui/use-toast"
 
-import ChatInput from "./ChatInput"
-import MessageList from "./MessageList"
+import ChatInput from "./chat-input"
+import MessageList from "./message-list"
 
 /**
  * Main FullMessageUI component

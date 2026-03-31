@@ -23,13 +23,13 @@ import { Label } from "@/components/ui/label"
 // eslint-disable-next-line max-lines-per-function
 const ExecutionMetadataSection = ({
   isOpen,
-  onOpenChange,
+  onOpenChange: handleOpenChange,
   executionMeta,
   handleUpdateField,
 }) => {
   return (
     <Card className="p-2">
-      <Collapsible open={isOpen} onOpenChange={onOpenChange}>
+      <Collapsible open={isOpen} onOpenChange={handleOpenChange}>
         <CollapsibleTrigger className="flex w-full justify-between items-center mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-500/10 rounded-lg">

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
-import { pingBackend, fetchGraphData } from "@api/setupIntegration.api"
+import { pingBackend, fetchGraphData } from "@api/setup-integration.api"
 import ct from "@constants/"
 
 // Async thunks for API testing

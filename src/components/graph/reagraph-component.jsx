@@ -1,5 +1,6 @@
 import PropTypes from "prop-types"
 import { useMemo } from "react"
+// eslint-disable-next-line import/no-unresolved
 import { GraphCanvas, lightTheme, darkTheme } from "reagraph"
 
 const randomColorGenerator = () => {
@@ -101,21 +102,6 @@ const _transformToReagraphFormat = (_graphData) => {
  * @returns {object} Reagraph canvas component
  */
 const ReagraphComponent = ({ graphData, theme }) => {
-  // Simple test data to verify Reagraph works
-  const testNodes = [
-    { id: "1", label: "Start", fill: "#10b981" },
-    { id: "2", label: "Main", fill: "#3b82f6" },
-    { id: "3", label: "Tool", fill: "#8b5cf6" },
-    { id: "4", label: "End", fill: "#ef4444" },
-  ]
-
-  const testEdges = [
-    { id: "1-2", source: "1", target: "2" },
-    { id: "2-3", source: "2", target: "3" },
-    { id: "3-2", source: "3", target: "2" },
-    { id: "2-4", source: "2", target: "4" },
-  ]
-
   const { nodes, edges } = _transformToReagraphFormat(graphData)
 
   // Select proper theme object based on theme string

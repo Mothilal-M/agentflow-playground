@@ -23,7 +23,7 @@ import chatReducer, {
   streamAssistantAnswer,
 } from "./chat.slice"
 import stateReducer from "./state.slice"
-import threadSettingsReducer from "./threadSettings.slice"
+import threadSettingsReducer from "./thread-settings.slice"
 
 const THREAD_ID = "thread-1"
 const HELLO_WORLD = "hello world"

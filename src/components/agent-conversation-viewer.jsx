@@ -4,7 +4,9 @@
  * Displays real-time agent-to-agent conversations and communications.
  */
 
+// eslint-disable-next-line import/named
 import { A2UIClient } from "@10xscale/agentflow-client"
+import PropTypes from "prop-types"
 import React, { useState, useEffect, useRef } from "react"
 
 const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
@@ -100,7 +102,7 @@ const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
     }
   }, [baseUrl, agentId, authToken])
 
-  const clearMessages = () => {
+  const handleClearMessages = () => {
     setMessages([])
     setThinking(null)
   }
@@ -122,7 +124,7 @@ const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
           </div>
         </div>
         <button
-          onClick={clearMessages}
+          onClick={handleClearMessages}
           className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
         >
           Clear
@@ -187,6 +189,16 @@ const MessageBubble = ({ message }) => {
   )
 }
 
+MessageBubble.propTypes = {
+  message: PropTypes.shape({
+    role: PropTypes.string,
+    type: PropTypes.string,
+    agent_id: PropTypes.string,
+    timestamp: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    content: PropTypes.string,
+  }).isRequired,
+}
+
 const ThinkingIndicator = ({ thinking }) => {
   return (
     <div className="mb-3 animate-pulse">
@@ -204,6 +216,25 @@ const ThinkingIndicator = ({ thinking }) => {
       </div>
     </div>
   )
+}
+
+ThinkingIndicator.propTypes = {
+  thinking: PropTypes.shape({
+    agent_id: PropTypes.string,
+    step: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    thinking: PropTypes.string,
+  }).isRequired,
+}
+
+AgentConversationViewer.propTypes = {
+  baseUrl: PropTypes.string.isRequired,
+  agentId: PropTypes.string,
+  authToken: PropTypes.string,
+}
+
+AgentConversationViewer.defaultProps = {
+  agentId: null,
+  authToken: null,
 }
 
 export default AgentConversationViewer

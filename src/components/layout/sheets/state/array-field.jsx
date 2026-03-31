@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 const ArrayField = ({
   label,
   items = [],
-  onAdd,
+  onAdd: handleAdd,
   onRemove,
   onUpdate,
   itemPlaceholder,
@@ -18,7 +18,7 @@ const ArrayField = ({
   <div>
     <div className="flex justify-between items-center mb-2">
       <Label className="text-xs">{label}</Label>
-      <Button size="sm" onClick={onAdd}>
+      <Button size="sm" onClick={handleAdd}>
         Add {label}
       </Button>
     </div>

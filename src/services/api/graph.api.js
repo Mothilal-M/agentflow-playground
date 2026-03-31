@@ -1,6 +1,6 @@
 import { Message } from "@10xscale/agentflow-client"
 
-import { getAgentFlowClient } from "@/lib/agentflowClient"
+import { getAgentFlowClient } from "@/lib/agentflow-client"
 
 const toClientMessage = (message) => {
   if (message instanceof Message) {

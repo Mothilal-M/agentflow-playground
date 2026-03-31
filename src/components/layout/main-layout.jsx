@@ -9,9 +9,9 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 
-import ModeToggle from "@/components/layout/header/ThemeSwitch"
+import ModeToggle from "@/components/layout/header/theme-switch"
 import { Separator } from "@/components/ui/separator"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toaster"
@@ -22,14 +22,14 @@ import ct from "@constants"
 
 import { Button } from "../ui/button"
 
-import AppSidebar from "./AppSidebar"
-import DevelopmentToolButton from "./DevelopmentToolButton"
-import EventsHistorySheet from "./sheets/EventsHistorySheet"
-import SettingsSheet from "./sheets/SettingsSheet"
+import AppSidebar from "./app-sidebar"
+import DevelopmentToolButton from "./development-tool-button"
+import EventsHistorySheet from "./sheets/events-history-sheet"
+import SettingsSheet from "./sheets/settings-sheet"
 import ViewStateSheet from "./sheets/state"
 import ThreadSettingsSheet from "./sheets/ThreadSettingsSheet"
-import ViewGraphSheet from "./sheets/ViewGraphSheet"
-import ViewMemorySheet from "./sheets/ViewMemorySheet"
+import ViewGraphSheet from "./sheets/view-graph-sheet"
+import ViewMemorySheet from "./sheets/view-memory-sheet"
 
 /**
  * MainLayout component renders the main application layout with sidebar, header, and content area.
