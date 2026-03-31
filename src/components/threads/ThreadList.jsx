@@ -1,6 +1,6 @@
 import { MessageSquarePlus, MoreVertical, Trash2, MessagesSquare } from "lucide-react"
 import PropTypes from "prop-types"
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useLocation } from "react-router-dom"
 
@@ -16,6 +16,8 @@ import { cn } from "@/lib/utils"
 import {
   deleteThread,
   setActiveThread,
+  fetchApiThreads,
+  selectThread,
 } from "@/services/store/slices/chat.slice"
 import ct from "@constants/"
 
@@ -57,9 +59,9 @@ const ThreadItem = ({ thread, isActive, onSelect, onDelete }) => (
         {thread.title}
       </p>
       <p className="text-[11px] text-muted-foreground truncate mt-0.5 leading-snug">
-        {thread.messages.length > 0
+        {thread.messages && thread.messages.length > 0
           ? thread.messages[thread.messages.length - 1].content
-          : "No messages yet"}
+          : "Click to load messages"}
       </p>
     </div>
 
@@ -110,6 +112,13 @@ const ThreadList = ({ className }) => {
   const storeSettings = useSelector((state) => state[ct.store.SETTINGS_STORE])
   const isVerified = Boolean(storeSettings?.verification?.isVerified)
 
+  // Fetch threads from API when verified
+  useEffect(() => {
+    if (isVerified) {
+      dispatch(fetchApiThreads())
+    }
+  }, [isVerified, dispatch])
+
   // Sort threads by updatedAt in descending order
   const sortedThreads = useMemo(() => {
     return [...threads].sort(
@@ -125,7 +134,7 @@ const ThreadList = ({ className }) => {
   }
 
   const handleSelectThread = (id) => {
-    dispatch(setActiveThread(id))
+    dispatch(selectThread(id))
     // Navigate to home page (dashboard) without threadId in URL
     // The Dashboard component will handle displaying the selected thread
     navigate("/")

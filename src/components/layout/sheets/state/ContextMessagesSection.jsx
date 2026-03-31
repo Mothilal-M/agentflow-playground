@@ -21,7 +21,7 @@ const ContextMessagesSection = ({
   onRemoveMessage,
 }) => {
   return (
-    <Card className="p-2">
+    <Card className="p-3">
       <div className="flex w-full justify-between items-center mb-3">
         <div>
           <Label className="text-xs font-semibold text-foreground uppercase tracking-wide">
@@ -44,7 +44,7 @@ const ContextMessagesSection = ({
           Add
         </Button>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-2">
         {(context || []).map((message, messageIndex) => (
           <ContextMessage
             key={`message-${message.message_id || messageIndex}`}
@@ -54,7 +54,7 @@ const ContextMessagesSection = ({
           />
         ))}
         {(context || []).length === 0 && (
-          <div className="text-center py-6 text-muted-foreground">
+          <div className="text-center py-8 text-muted-foreground">
             <p className="text-xs">No messages yet. Click &ldquo;Add&rdquo; to start.</p>
           </div>
         )}

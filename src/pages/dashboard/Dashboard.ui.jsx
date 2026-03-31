@@ -6,6 +6,7 @@ import {
   createThread,
   sendMessage as sendMessageThunk,
   setActiveThread,
+  selectThread,
 } from "@/services/store/slices/chat.slice"
 import {
   setSettings,
@@ -67,19 +68,15 @@ const DashboardUI = () => {
   // Handle threadId from URL parameter
   useEffect(() => {
     if (urlThreadId && urlThreadId !== activeThreadId) {
-      const thread = threads.find((t) => t.id === urlThreadId)
-      if (thread) {
-        dispatch(setActiveThread(urlThreadId))
-        // Remove threadId from URL after setting it
-        const newParameters = new URLSearchParams(searchParameters)
-        newParameters.delete("threadId")
-        setSearchParameters(newParameters, { replace: true })
-      }
+      dispatch(selectThread(urlThreadId))
+      // Remove threadId from URL after setting it
+      const newParameters = new URLSearchParams(searchParameters)
+      newParameters.delete("threadId")
+      setSearchParameters(newParameters, { replace: true })
     }
   }, [
     urlThreadId,
     activeThreadId,
-    threads,
     dispatch,
     setSearchParameters,
     searchParameters,

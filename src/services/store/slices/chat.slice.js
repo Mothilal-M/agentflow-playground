@@ -8,8 +8,10 @@ import {
   normalizeTimestamp,
 } from "@/lib/messageContent"
 import { invokeGraph, streamGraph } from "@/services/api/graph.api"
+import { listThreads as apiListThreads } from "@/services/api/thread.api"
+import { listMessages as apiListMessages } from "@/services/api/message.api"
 
-import { updateFullState } from "./state.slice"
+import { updateFullState, fetchThreadState } from "./state.slice"
 import {
   setContextMetadata,
   setThreadId as setThreadSettingsId,
@@ -727,6 +729,37 @@ const chatSlice = createSlice({
     clearAbortController: (state, action) => {
       delete state.abortControllers[action.payload]
     },
+    mergeApiThreads: (state, action) => {
+      const apiThreads = action.payload || []
+      apiThreads.forEach((apiThread) => {
+        const threadId = String(apiThread.thread_id)
+        const existing = state.threads.find((t) => t.id === threadId)
+        if (!existing) {
+          state.threads.push({
+            id: threadId,
+            title: apiThread.thread_name || "Untitled",
+            messages: [],
+            createdAt: apiThread.updated_at || new Date().toISOString(),
+            updatedAt: apiThread.updated_at || new Date().toISOString(),
+          })
+        } else {
+          // Update metadata from API
+          if (apiThread.thread_name && existing.title === "New Chat") {
+            existing.title = apiThread.thread_name
+          }
+          if (apiThread.updated_at) {
+            existing.updatedAt = apiThread.updated_at
+          }
+        }
+      })
+    },
+    setThreadMessages: (state, action) => {
+      const { threadId, messages } = action.payload
+      const thread = state.threads.find((t) => t.id === threadId)
+      if (!thread) return
+      thread.messages = messages
+      thread.updatedAt = new Date().toISOString()
+    },
   },
 })
 
@@ -745,6 +778,8 @@ export const {
   setGenerating,
   registerAbortController,
   clearAbortController,
+  mergeApiThreads,
+  setThreadMessages,
 } = chatSlice.actions
 
 export default chatSlice.reducer
@@ -952,6 +987,11 @@ const handleStreamChunk = (dispatch, threadId, data, streamState) => {
     return threadId
   }
 
+  if (data.message.role === "user") {
+    // Skip user messages from the stream — already added by sendMessage
+    return threadId
+  }
+
   if (data.message.role === "tool") {
     handleToolStreamMessage(dispatch, threadId, data, streamState)
     return threadId
@@ -959,4 +999,50 @@ const handleStreamChunk = (dispatch, threadId, data, streamState) => {
 
   handleAssistantStreamMessage(dispatch, threadId, data, streamState)
   return threadId
+}
+
+/**
+ * Fetch threads from the API and merge into the Redux store
+ */
+export const fetchApiThreads = () => async (dispatch) => {
+  try {
+    const response = await apiListThreads()
+    const threads = response?.data?.threads || []
+    dispatch(mergeApiThreads(threads))
+  } catch (error) {
+    console.error("Failed to fetch threads from API:", error)
+  }
+}
+
+/**
+ * Select a thread and load its messages from the API
+ */
+export const selectThread = (threadId) => async (dispatch) => {
+  dispatch(setActiveThread(threadId))
+  dispatch(setThreadSettingsId(threadId))
+
+  try {
+    const response = await apiListMessages(threadId)
+    const apiMessages = response?.data?.messages || []
+
+    const messages = []
+    apiMessages.forEach((msg) => {
+      const entries = buildMessageEntries(msg, {
+        baseId: getMessageId(msg),
+      })
+      entries.forEach((entry) => {
+        messages.push(buildStoredMessage(entry))
+      })
+    })
+
+    dispatch(setThreadMessages({ threadId: String(threadId), messages }))
+  } catch (error) {
+    console.error("Failed to fetch thread messages:", error)
+  }
+
+  try {
+    dispatch(fetchThreadState(threadId))
+  } catch (error) {
+    console.error("Failed to fetch thread state:", error)
+  }
 }
