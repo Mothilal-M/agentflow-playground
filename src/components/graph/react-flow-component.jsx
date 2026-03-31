@@ -223,12 +223,12 @@ const buildGraphLayout = (nodes, edges) => {
   }
 
   const maxLevel = Math.max(...columns.keys())
-  const maxRows = Math.max(...[...columns.values()].map((column) => column.length))
+  const maxRows = Math.max(
+    ...[...columns.values()].map((column) => column.length)
+  )
   const width = Math.max(
     MIN_GRAPH_WIDTH,
-    NODE_PADDING * 2 +
-      NODE_WIDTH +
-      maxLevel * (NODE_WIDTH + COLUMN_GAP)
+    NODE_PADDING * 2 + NODE_WIDTH + maxLevel * (NODE_WIDTH + COLUMN_GAP)
   )
   const height = Math.max(
     MIN_GRAPH_HEIGHT,
@@ -297,7 +297,10 @@ const buildGraphLayout = (nodes, edges) => {
 
 const ReFlowComponent = ({ graphData }) => {
   const markerId = useId().replaceAll(":", "")
-  const { nodes, edges } = useMemo(() => transformGraphData(graphData), [graphData])
+  const { nodes, edges } = useMemo(
+    () => transformGraphData(graphData),
+    [graphData]
+  )
   const graphLayout = useMemo(
     () => buildGraphLayout(nodes, edges),
     [edges, nodes]
