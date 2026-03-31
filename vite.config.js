@@ -43,26 +43,33 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: "src/setup-tests.js",
     include: ["src/**/*.{test,spec}.{js,jsx,ts,tsx}"],
+    exclude: [
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/dist/**",
+      "**/public/**",
+      "**/src/components/ui/**",
+      "**/src/components/magicui/**",
+    ],
     coverage: {
       provider: "v8",
       reporter: ["html", "json-summary", "text", "json"],
-      reportsDirectory: "./coverage", // Keep only one directory specification
-      subdir: "coverage", // Optional, if you want a subdirectory
+      reportsDirectory: "./coverage",
       reportOnFailure: true,
+      include: ["src/**/*.{js,jsx,ts,tsx}"],
+      exclude: [
+        "src/**/*.{test,spec}.{js,jsx,ts,tsx}",
+        "src/setup-tests.js",
+        "src/components/ui/**",
+        "src/components/magicui/**",
+      ],
       thresholds: {
         lines: 85,
         branches: 85,
         functions: 85,
       },
-      exclude: ["src/components/ui/**", "src/components/magicui/**"],
       statements: 30,
     },
-    exclude: [
-      "**/public/**",
-      "**/dist/**",
-      "**/src/components/ui/**",
-      "**/src/components/magicui/**",
-    ],
   },
   css: {
     devSourcemap: false,
