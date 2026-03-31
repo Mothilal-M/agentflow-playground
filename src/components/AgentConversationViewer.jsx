@@ -4,38 +4,38 @@
  * Displays real-time agent-to-agent conversations and communications.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { A2UIClient } from '@10xscale/agentflow-client';
+import React, { useState, useEffect, useRef } from "react"
+import { A2UIClient } from "@10xscale/agentflow-client"
 
 const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
-  const [messages, setMessages] = useState([]);
-  const [thinking, setThinking] = useState(null);
-  const [connectionState, setConnectionState] = useState('disconnected');
-  const [error, setError] = useState(null);
-  const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState([])
+  const [thinking, setThinking] = useState(null)
+  const [connectionState, setConnectionState] = useState("disconnected")
+  const [error, setError] = useState(null)
+  const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, thinking]);
+    scrollToBottom()
+  }, [messages, thinking])
 
   useEffect(() => {
     const client = new A2UIClient({
       baseUrl,
-      agentId: agentId || '*',
+      agentId: agentId || "*",
       authToken,
       debug: true,
-    });
+    })
 
     client.onConnectionChange((state) => {
-      setConnectionState(state);
-    });
+      setConnectionState(state)
+    })
 
     // Handle agent messages
-    client.on('AGENT_MESSAGE', (message) => {
+    client.on("AGENT_MESSAGE", (message) => {
       setMessages((prev) => [
         ...prev,
         {
@@ -44,66 +44,66 @@ const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
           content: message.data.content,
           role: message.data.role,
           timestamp: message.timestamp,
-          type: 'message',
+          type: "message",
         },
-      ]);
-    });
+      ])
+    })
 
     // Handle agent thinking
-    client.on('AGENT_THINKING', (message) => {
+    client.on("AGENT_THINKING", (message) => {
       setThinking({
         agent_id: message.agent_id,
         thinking: message.data.thinking,
         step: message.data.step,
-      });
-    });
+      })
+    })
 
     // Handle agent completion (clear thinking)
-    client.on('AGENT_COMPLETE', (message) => {
-      setThinking(null);
+    client.on("AGENT_COMPLETE", (message) => {
+      setThinking(null)
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now(),
           agent_id: message.agent_id,
           content: `Completed: ${JSON.stringify(message.data.result)}`,
-          role: 'system',
+          role: "system",
           timestamp: message.timestamp,
-          type: 'complete',
+          type: "complete",
         },
-      ]);
-    });
+      ])
+    })
 
     // Handle errors
-    client.on('AGENT_ERROR', (message) => {
+    client.on("AGENT_ERROR", (message) => {
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now(),
           agent_id: message.agent_id,
           content: `Error: ${message.data.error}`,
-          role: 'system',
+          role: "system",
           timestamp: message.timestamp,
-          type: 'error',
+          type: "error",
         },
-      ]);
-    });
+      ])
+    })
 
     client.onError((err) => {
-      setError(err.message);
-    });
+      setError(err.message)
+    })
 
-    client.connect();
+    client.connect()
 
     return () => {
-      client.disconnect();
-    };
-  }, [baseUrl, agentId, authToken]);
+      client.disconnect()
+    }
+  }, [baseUrl, agentId, authToken])
 
   const clearMessages = () => {
-    setMessages([]);
-    setThinking(null);
-  };
+    setMessages([])
+    setThinking(null)
+  }
 
   return (
     <div className="agent-conversation-viewer flex flex-col h-full">
@@ -115,7 +115,7 @@ const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
           <div className="flex items-center gap-2 text-sm mt-1">
             <div
               className={`w-2 h-2 rounded-full ${
-                connectionState === 'connected' ? 'bg-green-500' : 'bg-red-500'
+                connectionState === "connected" ? "bg-green-500" : "bg-red-500"
               }`}
             ></div>
             <span className="text-gray-600 capitalize">{connectionState}</span>
@@ -151,21 +151,21 @@ const AgentConversationViewer = ({ baseUrl, agentId, authToken }) => {
         <div ref={messagesEndRef} />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const MessageBubble = ({ message }) => {
-  const isSystem = message.role === 'system';
-  const isError = message.type === 'error';
-  const isComplete = message.type === 'complete';
+  const isSystem = message.role === "system"
+  const isError = message.type === "error"
+  const isComplete = message.type === "complete"
 
   const bgColor = isError
-    ? 'bg-red-100 border-red-300'
+    ? "bg-red-100 border-red-300"
     : isComplete
-    ? 'bg-green-100 border-green-300'
-    : isSystem
-    ? 'bg-gray-100 border-gray-300'
-    : 'bg-white border-gray-200';
+      ? "bg-green-100 border-green-300"
+      : isSystem
+        ? "bg-gray-100 border-gray-300"
+        : "bg-white border-gray-200"
 
   return (
     <div className="mb-3">
@@ -184,8 +184,8 @@ const MessageBubble = ({ message }) => {
         <div className="whitespace-pre-wrap">{message.content}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const ThinkingIndicator = ({ thinking }) => {
   return (
@@ -203,8 +203,7 @@ const ThinkingIndicator = ({ thinking }) => {
         <div className="text-blue-800 italic">{thinking.thinking}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AgentConversationViewer;
-
+export default AgentConversationViewer

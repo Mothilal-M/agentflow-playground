@@ -10,25 +10,29 @@ const ROLE_CONFIG = {
   user: {
     icon: User,
     label: "User",
-    badge: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/20",
+    badge:
+      "bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/20",
     accent: "border-l-blue-500",
   },
   assistant: {
     icon: Bot,
     label: "Assistant",
-    badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20",
+    badge:
+      "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20",
     accent: "border-l-emerald-500",
   },
   tool: {
     icon: Wrench,
     label: "Tool",
-    badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20",
+    badge:
+      "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20",
     accent: "border-l-amber-500",
   },
   system: {
     icon: Monitor,
     label: "System",
-    badge: "bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/20",
+    badge:
+      "bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/20",
     accent: "border-l-violet-500",
   },
 }
@@ -36,7 +40,10 @@ const ROLE_CONFIG = {
 const tryParseJSON = (text) => {
   if (typeof text !== "string") return null
   const trimmed = text.trim()
-  if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+  if (
+    (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+    (trimmed.startsWith("[") && trimmed.endsWith("]"))
+  ) {
     try {
       const parsed = JSON.parse(trimmed)
       return JSON.stringify(parsed, null, 2)
@@ -87,23 +94,33 @@ const ContextMessage = ({
   const isLongContent = contentText.length > 300
 
   return (
-    <div className={cn(
-      "rounded-lg border border-border/40 bg-card/50 hover:bg-card/80 transition-all duration-150 overflow-hidden",
-      "border-l-[3px]",
-      roleConfig.accent
-    )}>
+    <div
+      className={cn(
+        "rounded-lg border border-border/40 bg-card/50 hover:bg-card/80 transition-all duration-150 overflow-hidden",
+        "border-l-[3px]",
+        roleConfig.accent
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-muted/20 border-b border-border/20">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono text-muted-foreground/70 w-5 text-right">
             {index + 1}
           </span>
-          <div className={cn("inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full", roleConfig.badge)}>
+          <div
+            className={cn(
+              "inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full",
+              roleConfig.badge
+            )}
+          >
             <Icon className="h-3 w-3" />
             {roleConfig.label}
           </div>
           {message.message_id && (
-            <span className="text-[10px] text-muted-foreground/60 font-mono truncate max-w-[140px]" title={message.message_id}>
+            <span
+              className="text-[10px] text-muted-foreground/60 font-mono truncate max-w-[140px]"
+              title={message.message_id}
+            >
               {message.message_id}
             </span>
           )}

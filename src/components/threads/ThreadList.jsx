@@ -1,4 +1,9 @@
-import { MessageSquarePlus, MoreVertical, Trash2, MessagesSquare } from "lucide-react"
+import {
+  MessageSquarePlus,
+  MoreVertical,
+  Trash2,
+  MessagesSquare,
+} from "lucide-react"
 import PropTypes from "prop-types"
 import { useMemo, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -52,10 +57,12 @@ const ThreadItem = ({ thread, isActive, onSelect, onDelete }) => (
     onKeyDown={(e) => e.key === "Enter" && onSelect(thread.id)}
   >
     <div className="flex-1 min-w-0">
-      <p className={cn(
-        "text-[13px] truncate leading-snug",
-        isActive ? "font-medium text-foreground" : "font-normal"
-      )}>
+      <p
+        className={cn(
+          "text-[13px] truncate leading-snug",
+          isActive ? "font-medium text-foreground" : "font-normal"
+        )}
+      >
         {thread.title}
       </p>
       <p className="text-[11px] text-muted-foreground truncate mt-0.5 leading-snug">
@@ -100,7 +107,7 @@ const ThreadList = ({ className }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   // Get threadId from URL search params
   const searchParams = new URLSearchParams(location.search)
   const threadId = searchParams.get("threadId")

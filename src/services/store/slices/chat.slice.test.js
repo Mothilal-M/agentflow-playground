@@ -214,7 +214,12 @@ describe("chat slice", () => {
           message: {
             role: "assistant",
             content: [
-              { type: "tool_call", id: "call-1", name: "get_weather", args: { location: "khulna" } },
+              {
+                type: "tool_call",
+                id: "call-1",
+                name: "get_weather",
+                args: { location: "khulna" },
+              },
             ],
             reasoning: "I need the weather tool.",
           },
@@ -230,8 +235,12 @@ describe("chat slice", () => {
     // Regardless of arrival order, display order must be:
     // reasoning → tool_call → tool_result → assistant text
     expect(kinds.indexOf("reasoning")).toBeLessThan(kinds.indexOf("tool_call"))
-    expect(kinds.indexOf("tool_call")).toBeLessThan(kinds.indexOf("tool_result"))
-    expect(kinds.indexOf("tool_result")).toBeLessThan(kinds.indexOf("assistant"))
+    expect(kinds.indexOf("tool_call")).toBeLessThan(
+      kinds.indexOf("tool_result")
+    )
+    expect(kinds.indexOf("tool_result")).toBeLessThan(
+      kinds.indexOf("assistant")
+    )
   })
 
   it("does not create empty assistant messages for metadata-only stream chunks", async () => {

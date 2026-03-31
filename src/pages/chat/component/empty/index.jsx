@@ -1,5 +1,13 @@
 // import { Sparkles } from "lucide-react"
-import { Sparkles, Settings, AlertCircle, Zap, Code2, BookOpen, Lightbulb } from "lucide-react"
+import {
+  Sparkles,
+  Settings,
+  AlertCircle,
+  Zap,
+  Code2,
+  BookOpen,
+  Lightbulb,
+} from "lucide-react"
 import PropTypes from "prop-types"
 import { useState, useRef } from "react"
 import { useSelector } from "react-redux"
@@ -7,10 +15,27 @@ import { useSelector } from "react-redux"
 import EmptyInputCard from "./EmptyInputCard"
 
 const SUGGESTIONS = [
-  { icon: Code2, label: "Write code", prompt: "Write a Python function to sort a list of dictionaries by a specific key" },
-  { icon: BookOpen, label: "Explain a concept", prompt: "Explain how large language models work in simple terms" },
-  { icon: Lightbulb, label: "Brainstorm ideas", prompt: "Give me 5 creative ideas for a SaaS product that uses AI" },
-  { icon: Zap, label: "Summarize text", prompt: "Summarize the key points of the following text:" },
+  {
+    icon: Code2,
+    label: "Write code",
+    prompt:
+      "Write a Python function to sort a list of dictionaries by a specific key",
+  },
+  {
+    icon: BookOpen,
+    label: "Explain a concept",
+    prompt: "Explain how large language models work in simple terms",
+  },
+  {
+    icon: Lightbulb,
+    label: "Brainstorm ideas",
+    prompt: "Give me 5 creative ideas for a SaaS product that uses AI",
+  },
+  {
+    icon: Zap,
+    label: "Summarize text",
+    prompt: "Summarize the key points of the following text:",
+  },
 ]
 
 /**

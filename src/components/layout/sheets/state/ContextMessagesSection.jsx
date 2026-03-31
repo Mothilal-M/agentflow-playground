@@ -55,7 +55,9 @@ const ContextMessagesSection = ({
         ))}
         {(context || []).length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            <p className="text-xs">No messages yet. Click &ldquo;Add&rdquo; to start.</p>
+            <p className="text-xs">
+              No messages yet. Click &ldquo;Add&rdquo; to start.
+            </p>
           </div>
         )}
       </div>

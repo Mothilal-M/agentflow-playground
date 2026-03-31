@@ -32,7 +32,9 @@ describe("ContextMessage", () => {
       />
     )
 
-    expect(screen.getAllByText(/Need to call the weather tool/i).length).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText(/Need to call the weather tool/i).length
+    ).toBeGreaterThan(0)
     expect(screen.getAllByText(/get_weather/i).length).toBeGreaterThan(0)
   })
 })

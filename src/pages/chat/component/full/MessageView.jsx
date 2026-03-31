@@ -55,8 +55,7 @@ const Message = ({ message }) => {
   const isUser = message.role === "user"
   const isReasoning = message.kind === "reasoning"
   const isToolCall = message.kind === "tool_call"
-  const isToolResult =
-    message.kind === "tool_result" || message.role === "tool"
+  const isToolResult = message.kind === "tool_result" || message.role === "tool"
   const isError = message.kind === "error"
   const showToolMessageContent = useSelector(
     (state) => state.threadSettingsStore.show_tool_message_content
@@ -246,16 +245,22 @@ const Message = ({ message }) => {
           )}
         </div>
       )}
-      <div className={`flex flex-col flex-1 min-w-0 max-w-[85%] ${isUser ? "items-end" : "items-start"}`}>
+      <div
+        className={`flex flex-col flex-1 min-w-0 max-w-[85%] ${isUser ? "items-end" : "items-start"}`}
+      >
         {!isUser && kindLabel && (
           <div className="mb-1">
-            <span className={`inline-flex items-center text-[11px] font-semibold tracking-wider uppercase ${isError ? "text-red-500 dark:text-red-400" : "text-muted-foreground"}`}>
+            <span
+              className={`inline-flex items-center text-[11px] font-semibold tracking-wider uppercase ${isError ? "text-red-500 dark:text-red-400" : "text-muted-foreground"}`}
+            >
               {kindLabel}
             </span>
           </div>
         )}
         <div className={isUser ? "flex justify-end" : "relative w-full"}>
-          <div className={`${isUser ? "rounded-2xl px-5 py-3 shadow-sm max-w-full" : isError ? "" : "py-1"} ${bubbleClassName}`}>
+          <div
+            className={`${isUser ? "rounded-2xl px-5 py-3 shadow-sm max-w-full" : isError ? "" : "py-1"} ${bubbleClassName}`}
+          >
             <div className="text-[15px] leading-relaxed">
               {isUser ? (
                 <p className="whitespace-pre-wrap">{message.content}</p>
@@ -339,7 +344,6 @@ const Message = ({ message }) => {
               </Sheet>
             </div>
           )}
-
         </div>
       </div>
 
@@ -548,7 +552,10 @@ const MessageInput = ({
         onDrop={handleDrop}
       >
         <div className="p-0">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-2 w-full">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-2 p-2 w-full"
+          >
             {/* Text input */}
             <div className="flex-1 relative w-full px-2 pt-2">
               <textarea
@@ -585,7 +592,7 @@ const MessageInput = ({
                     </TooltipTrigger>
                     <TooltipContent side="top">Attach files</TooltipContent>
                   </Tooltip>
-                  
+
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -598,7 +605,9 @@ const MessageInput = ({
                         <Mic className="w-4 h-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="top">Voice input (coming soon)</TooltipContent>
+                    <TooltipContent side="top">
+                      Voice input (coming soon)
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
@@ -620,7 +629,8 @@ const MessageInput = ({
                     type="submit"
                     size="icon"
                     disabled={
-                      (!message.trim() && attachedFiles.length === 0) || disabled
+                      (!message.trim() && attachedFiles.length === 0) ||
+                      disabled
                     }
                     className="h-8 w-8 rounded-full animate-in fade-in zoom-in bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50"
                   >
@@ -693,8 +703,13 @@ const MessageView = ({ thread, disabled = false }) => {
                 Backend URL is not configured properly
               </p>
               <p className="text-xs">
-                Use <code className="bg-amber-100 dark:bg-amber-900 px-1.5 py-0.5 rounded">?backendUrl=YOUR_URL</code> in the URL or click the{" "}
-                <Settings className="h-3 w-3 inline mx-0.5" /> Settings icon to configure
+                Use{" "}
+                <code className="bg-amber-100 dark:bg-amber-900 px-1.5 py-0.5 rounded">
+                  ?backendUrl=YOUR_URL
+                </code>{" "}
+                in the URL or click the{" "}
+                <Settings className="h-3 w-3 inline mx-0.5" /> Settings icon to
+                configure
               </p>
             </div>
           </div>

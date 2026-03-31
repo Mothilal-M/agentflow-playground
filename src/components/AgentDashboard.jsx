@@ -5,41 +5,41 @@
  * capabilities, and recent activity.
  */
 
-import React, { useState, useEffect } from 'react';
-import { A2UIClient } from '@10xscale/agentflow-client';
+import React, { useState, useEffect } from "react"
+import { A2UIClient } from "@10xscale/agentflow-client"
 
 const AgentDashboard = ({ baseUrl, authToken }) => {
-  const [agents, setAgents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [connectionState, setConnectionState] = useState('disconnected');
+  const [agents, setAgents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [connectionState, setConnectionState] = useState("disconnected")
 
   useEffect(() => {
-    let client = null;
+    let client = null
 
     const initClient = async () => {
       try {
         // Fetch initial agent list
         const response = await fetch(`${baseUrl}/api/v1/agents`, {
           headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
-        });
-        const data = await response.json();
-        setAgents(data.agents || []);
-        setLoading(false);
+        })
+        const data = await response.json()
+        setAgents(data.agents || [])
+        setLoading(false)
 
         // Connect to WebSocket for real-time updates
         client = new A2UIClient({
           baseUrl,
-          agentId: '*', // Subscribe to all agents
+          agentId: "*", // Subscribe to all agents
           authToken,
           debug: true,
-        });
+        })
 
         client.onConnectionChange((state) => {
-          setConnectionState(state);
-        });
+          setConnectionState(state)
+        })
 
-        client.on('AGENT_STATUS', (message) => {
+        client.on("AGENT_STATUS", (message) => {
           // Update agent status in real-time
           setAgents((prev) =>
             prev.map((agent) =>
@@ -47,35 +47,35 @@ const AgentDashboard = ({ baseUrl, authToken }) => {
                 ? { ...agent, status: message.data.status }
                 : agent
             )
-          );
-        });
+          )
+        })
 
         client.onError((err) => {
-          setError(err.message);
-        });
+          setError(err.message)
+        })
 
-        client.connect();
+        client.connect()
       } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        setError(err.message)
+        setLoading(false)
       }
-    };
+    }
 
-    initClient();
+    initClient()
 
     return () => {
       if (client) {
-        client.disconnect();
+        client.disconnect()
       }
-    };
-  }, [baseUrl, authToken]);
+    }
+  }, [baseUrl, authToken])
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-lg">Loading agents...</div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -84,7 +84,7 @@ const AgentDashboard = ({ baseUrl, authToken }) => {
         <strong className="font-bold">Error:</strong>
         <span className="block sm:inline"> {error}</span>
       </div>
-    );
+    )
   }
 
   return (
@@ -94,24 +94,25 @@ const AgentDashboard = ({ baseUrl, authToken }) => {
         <div className="flex items-center gap-2 text-sm">
           <div
             className={`w-2 h-2 rounded-full ${
-              connectionState === 'connected'
-                ? 'bg-green-500'
-                : connectionState === 'connecting' || connectionState === 'reconnecting'
-                ? 'bg-yellow-500'
-                : 'bg-red-500'
+              connectionState === "connected"
+                ? "bg-green-500"
+                : connectionState === "connecting" ||
+                    connectionState === "reconnecting"
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
             }`}
           ></div>
           <span className="text-gray-600">
-            {connectionState === 'connected'
-              ? 'Connected'
-              : connectionState === 'connecting'
-              ? 'Connecting...'
-              : connectionState === 'reconnecting'
-              ? 'Reconnecting...'
-              : 'Disconnected'}
+            {connectionState === "connected"
+              ? "Connected"
+              : connectionState === "connecting"
+                ? "Connecting..."
+                : connectionState === "reconnecting"
+                  ? "Reconnecting..."
+                  : "Disconnected"}
           </span>
           <span className="text-gray-400 ml-4">
-            {agents.length} agent{agents.length !== 1 ? 's' : ''} active
+            {agents.length} agent{agents.length !== 1 ? "s" : ""} active
           </span>
         </div>
       </div>
@@ -128,17 +129,17 @@ const AgentDashboard = ({ baseUrl, authToken }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 const AgentCard = ({ agent }) => {
   const statusColors = {
-    active: 'bg-green-100 text-green-800',
-    idle: 'bg-blue-100 text-blue-800',
-    busy: 'bg-yellow-100 text-yellow-800',
-    error: 'bg-red-100 text-red-800',
-    offline: 'bg-gray-100 text-gray-800',
-  };
+    active: "bg-green-100 text-green-800",
+    idle: "bg-blue-100 text-blue-800",
+    busy: "bg-yellow-100 text-yellow-800",
+    error: "bg-red-100 text-red-800",
+    offline: "bg-gray-100 text-gray-800",
+  }
 
   return (
     <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow">
@@ -149,7 +150,7 @@ const AgentCard = ({ agent }) => {
         </div>
         <span
           className={`px-2 py-1 rounded text-xs font-medium ${
-            statusColors[agent.status] || 'bg-gray-100 text-gray-800'
+            statusColors[agent.status] || "bg-gray-100 text-gray-800"
           }`}
         >
           {agent.status}
@@ -177,8 +178,7 @@ const AgentCard = ({ agent }) => {
         <div>Last seen: {new Date(agent.last_heartbeat).toLocaleString()}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AgentDashboard;
-
+export default AgentDashboard

@@ -94,7 +94,9 @@ const MainLayout = () => {
                 <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
                   <GitGraph className="h-4 w-4" />
                 </div>
-                <span className="text-sm font-semibold tracking-tight">AgentFlow Workbench</span>
+                <span className="text-sm font-semibold tracking-tight">
+                  AgentFlow Workbench
+                </span>
               </span>
             </div>
 
@@ -149,7 +151,10 @@ const MainLayout = () => {
                 isActive={activeSheet === "history"}
                 disabled={!isVerified}
               />
-              <Separator orientation="vertical" className="h-4 bg-border/60 mx-1" />
+              <Separator
+                orientation="vertical"
+                className="h-4 bg-border/60 mx-1"
+              />
               <DevelopmentToolButton
                 icon={Settings}
                 tooltip="Settings"
@@ -158,7 +163,10 @@ const MainLayout = () => {
                 disabled={false}
               />
               <ModeToggle />
-              <Separator orientation="vertical" className="h-4 bg-border/60 mx-1" />
+              <Separator
+                orientation="vertical"
+                className="h-4 bg-border/60 mx-1"
+              />
               <div className="flex text-sm text-gray-500 dark:text-gray-400">
                 <Github />{" "}
                 <span className="ml-1">

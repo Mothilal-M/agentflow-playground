@@ -219,7 +219,10 @@ const getToolCallKey = (block, index) =>
   block?.id || block?.call_id || block?.name || `tool-call-${index}`
 
 const getToolResultKey = (block, index, metadata = {}) =>
-  block?.call_id || metadata?.tool_call_id || block?.id || `tool-result-${index}`
+  block?.call_id ||
+  metadata?.tool_call_id ||
+  block?.id ||
+  `tool-result-${index}`
 
 const getToolCallBlocks = (message, blocks) => {
   const contentBlocks = blocks.filter((block) => block?.type === "tool_call")
@@ -227,7 +230,9 @@ const getToolCallBlocks = (message, blocks) => {
     contentBlocks.map((block, index) => getToolCallKey(block, index))
   )
 
-  const toolCalls = Array.isArray(message.tools_calls) ? message.tools_calls : []
+  const toolCalls = Array.isArray(message.tools_calls)
+    ? message.tools_calls
+    : []
   const fallbackBlocks = toolCalls.reduce((accumulator, toolCall, index) => {
     const key = toolCall?.id || toolCall?.function?.name || `tool-call-${index}`
 
@@ -329,8 +334,7 @@ const buildAssistantEntries = (message, ids = {}) => {
         metadata: {
           ...(message.metadata || {}),
           function_name: block.name || message.metadata?.function_name,
-          function_argument:
-            block.args ?? message.metadata?.function_argument,
+          function_argument: block.args ?? message.metadata?.function_argument,
         },
         timestamp: message.timestamp,
         allowEmpty: true,
@@ -452,7 +456,12 @@ const resolveAssistantTextRawContent = (message, blocks, data, streamState) => {
   return ""
 }
 
-const handleAssistantStreamMessage = (dispatch, threadId, data, streamState) => {
+const handleAssistantStreamMessage = (
+  dispatch,
+  threadId,
+  data,
+  streamState
+) => {
   const message = data.message
   const blocks = normalizeContentBlocks(message.content)
   const toolCallBlocks = getToolCallBlocks(message, blocks)
@@ -703,7 +712,8 @@ const chatSlice = createSlice({
       }
 
       if (oldThreadId in state.abortControllers) {
-        state.abortControllers[newThreadId] = state.abortControllers[oldThreadId]
+        state.abortControllers[newThreadId] =
+          state.abortControllers[oldThreadId]
         delete state.abortControllers[oldThreadId]
       }
     },
@@ -957,7 +967,12 @@ const processStream = async (
 
   for await (const chunk of streamGraph(body, controller.signal)) {
     const data = chunk?.data || chunk
-    activeThreadId = handleStreamChunk(dispatch, activeThreadId, data, streamState)
+    activeThreadId = handleStreamChunk(
+      dispatch,
+      activeThreadId,
+      data,
+      streamState
+    )
   }
 
   return activeThreadId
