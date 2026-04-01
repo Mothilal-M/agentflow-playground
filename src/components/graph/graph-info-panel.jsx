@@ -232,7 +232,7 @@ export const GraphInfoPanel = ({ graphInfo }) => {
   } = processGraphData(graphInfo)
 
   return (
-    <Card className="absolute top-4 right-4 z-10 w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border shadow-lg">
+    <Card className="border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950/80">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Info className="w-5 h-5" />

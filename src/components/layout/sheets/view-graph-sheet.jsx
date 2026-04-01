@@ -1,7 +1,6 @@
 import PropTypes from "prop-types"
 import { useSelector } from "react-redux"
 
-import GraphInfoPanel from "@/components/graph/graph-info-panel"
 import ReFlowComponent from "@/components/graph/react-flow-component"
 import {
   Sheet,
@@ -58,8 +57,10 @@ const ViewGraphSheet = ({ isOpen, onClose }) => {
 
         <div className="mt-6 h-full relative">
           <div className="h-full relative">
-            <ReFlowComponent graphData={displayData} />
-            <GraphInfoPanel graphInfo={displayData.info || {}} />
+            <ReFlowComponent
+              graphData={displayData}
+              graphInfo={displayData.info || {}}
+            />
           </div>
         </div>
       </SheetContent>

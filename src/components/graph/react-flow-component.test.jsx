@@ -1,7 +1,47 @@
+import { cloneElement } from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import ReFlowComponent from "./react-flow-component"
+
+vi.mock("reaflow", () => ({
+  Canvas: ({ nodes = [], edges = [], node: renderNode }) => (
+    <svg data-testid="mock-network-canvas">
+      {edges.map((edge) => (
+        <path
+          key={edge.id}
+          data-edge-id={edge.id}
+          d={`M${edge.from || 0},0 L${edge.to || 0},1`}
+        />
+      ))}
+
+      {nodes.map((nodeData) => {
+        if (!renderNode) {
+          return <text key={nodeData.id}>{nodeData.text}</text>
+        }
+
+        const renderedNode = renderNode({ properties: nodeData })
+        return (
+          <g key={nodeData.id} data-node-id={nodeData.id}>
+            {cloneElement(renderedNode, { properties: nodeData })}
+          </g>
+        )
+      })}
+    </svg>
+  ),
+  Node: ({ properties, onClick }) => (
+    <g>
+      <rect
+        data-testid={`mock-node-${properties.id}`}
+        onClick={(event) => onClick?.(event, properties)}
+      />
+      <text>{properties.text}</text>
+      <text>{properties.text?.[0]}</text>
+    </g>
+  ),
+  Icon: () => null,
+  Label: () => null,
+}))
 
 describe("ReFlowComponent", () => {
   it("renders graph nodes without relying on the old graph library", () => {
@@ -68,7 +108,7 @@ describe("ReFlowComponent", () => {
     ).toBeInTheDocument()
   })
 
-  it("opens node details when a node is clicked", () => {
+  it("shows node details in the right sidebar when a node is clicked", () => {
     render(
       <ReFlowComponent
         graphData={{
@@ -83,7 +123,8 @@ describe("ReFlowComponent", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Open details for MAIN" }))
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument()
+    expect(screen.getByLabelText("Graph sidebar")).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Node Details" })).toBeInTheDocument()
     expect(screen.getByText("Inspect the selected node and its graph connections.")).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: "MAIN" })).toBeInTheDocument()
     expect(screen.getAllByText("Agent node").length).toBeGreaterThan(0)
