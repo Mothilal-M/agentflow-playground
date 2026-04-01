@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Settings, CheckCircle } from "lucide-react"
 import PropTypes from "prop-types"

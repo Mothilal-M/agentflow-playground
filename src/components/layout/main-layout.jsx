@@ -36,7 +36,7 @@ import ViewMemorySheet from "./sheets/view-memory-sheet"
  * Includes developer tools: View State, View Memory, View Graph, and Events History.
  * Dev tools are disabled when backend URL is not configured.
  */
-// eslint-disable-next-line max-lines-per-function, complexity
+// eslint-disable-next-line complexity
 const MainLayout = () => {
   const [activeSheet, setActiveSheet] = useState(null)
   const dispatch = useDispatch()
