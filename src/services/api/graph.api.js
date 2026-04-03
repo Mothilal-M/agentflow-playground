@@ -24,35 +24,6 @@ const toClientMessage = (message) => {
 
 const mapBodyMessages = (messages = []) => messages.map(toClientMessage)
 
-const formatStreamChunk = (chunk) => {
-  if (chunk.event === "message" && chunk.message) {
-    return {
-      data: {
-        message: chunk.message,
-        delta: chunk.message.delta,
-        metadata: chunk.metadata || {},
-      },
-    }
-  }
-
-  if (chunk.event === "updates" || chunk.event === "state") {
-    return {
-      data: {
-        state: chunk.state,
-        updates: chunk.updates,
-        metadata: chunk.metadata || {},
-      },
-    }
-  }
-
-  return {
-    data: {
-      ...chunk,
-      metadata: chunk.metadata || {},
-    },
-  }
-}
-
 /**
  * Invoke graph with messages
  * @param {object} body - GraphInputSchema-compatible payload
@@ -106,9 +77,9 @@ export async function* streamGraph(body, signal) {
     })
   }
 
-  // Yield chunks in the format expected by the existing code
+  // Yield raw chunks so the UI can inspect the exact streaming payload
   for await (const chunk of stream) {
-    yield formatStreamChunk(chunk)
+    yield chunk
   }
 }
 

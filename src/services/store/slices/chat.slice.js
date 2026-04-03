@@ -11,6 +11,11 @@ import { invokeGraph, streamGraph } from "@/services/api/graph.api"
 import { listThreads as apiListThreads } from "@/services/api/thread.api"
 import { listMessages as apiListMessages } from "@/services/api/message.api"
 
+import {
+  beginStreamEvents,
+  finishStreamEvents,
+  recordStreamEvent,
+} from "./events.slice"
 import { updateFullState, fetchThreadState } from "./state.slice"
 import {
   setContextMetadata,
@@ -69,6 +74,42 @@ const normalizeMessageContent = (content, options = {}) =>
 
 const normalizeUserContent = (content) =>
   normalizeMessageContent(content).trim()
+
+const normalizeStreamChunk = (chunk) => {
+  if (chunk?.data && !chunk?.event) {
+    return chunk.data
+  }
+
+  if (chunk?.event === "message" && chunk.message) {
+    return {
+      message: chunk.message,
+      delta: chunk.message.delta,
+      metadata: chunk.metadata || {},
+      state: chunk.state,
+      data: chunk.data,
+      thread_id: chunk.thread_id,
+      run_id: chunk.run_id,
+      timestamp: chunk.timestamp,
+    }
+  }
+
+  if (chunk?.event === "updates" || chunk?.event === "state") {
+    return {
+      state: chunk.state,
+      updates: chunk.updates,
+      data: chunk.data,
+      metadata: chunk.metadata || {},
+      thread_id: chunk.thread_id,
+      run_id: chunk.run_id,
+      timestamp: chunk.timestamp,
+    }
+  }
+
+  return {
+    ...chunk,
+    metadata: chunk?.metadata || {},
+  }
+}
 
 const isBlankMessageContent = (content) =>
   normalizeUserContent(content).length === 0
@@ -847,6 +888,7 @@ export const stopStreaming = (threadId) => (dispatch, getState) => {
 
   if (controller) {
     controller.abort()
+    dispatch(finishStreamEvents(threadId))
   }
 }
 
@@ -910,12 +952,12 @@ const handleInvokeResponse = (dispatch, threadId, response) => {
       })
     )
   })
-
   return threadId
 }
 
 export const streamAssistantAnswer = (threadId, body) => async (dispatch) => {
   dispatch(setGenerating({ threadId, value: true }))
+  dispatch(beginStreamEvents(threadId))
   const controller = new globalThis.AbortController()
   dispatch(registerAbortController({ threadId, controller }))
 
@@ -949,6 +991,7 @@ export const streamAssistantAnswer = (threadId, body) => async (dispatch) => {
   } finally {
     dispatch(setGenerating({ threadId: activeThreadId, value: false }))
     dispatch(clearAbortController(activeThreadId))
+    dispatch(finishStreamEvents(activeThreadId))
 
     if (activeThreadId !== threadId) {
       dispatch(setGenerating({ threadId, value: false }))
@@ -967,7 +1010,8 @@ const processStream = async (
   let activeThreadId = threadId
 
   for await (const chunk of streamGraph(body, controller.signal)) {
-    const data = chunk?.data || chunk
+    dispatch(recordStreamEvent(chunk))
+    const data = normalizeStreamChunk(chunk)
     activeThreadId = handleStreamChunk(
       dispatch,
       activeThreadId,

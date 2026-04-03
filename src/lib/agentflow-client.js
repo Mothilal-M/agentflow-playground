@@ -1,11 +1,13 @@
 import { AgentFlowClient } from "@10xscale/agentflow-client"
 
+import { getCurrentSettings } from "@/lib/settings-utils"
+
 let agentFlowClientInstance = null
 let agentFlowClientConfigKey = null
 
 const buildClientConfig = () => {
-  const backendUrl = localStorage.getItem("backendUrl")
-  const authToken = localStorage.getItem("authToken")
+  const settings = getCurrentSettings()
+  const { backendUrl, auth, authToken, credentials } = settings
 
   if (!backendUrl) {
     throw new Error("Backend URL is not set")
@@ -14,12 +16,39 @@ const buildClientConfig = () => {
   // Normalize URL (remove trailing slash)
   const normalizedUrl = backendUrl.trim().replace(/\/$/, "")
 
-  return {
+  const config = {
     baseUrl: normalizedUrl,
-    authToken: authToken || undefined,
     timeout: 600000, // 10 minutes for long-running agent calls
     debug: false,
   }
+
+  if (auth?.type === "basic") {
+    config.auth = {
+      type: "basic",
+      username: auth.username,
+      password: auth.password,
+    }
+  } else if (auth?.type === "header") {
+    config.auth = {
+      type: "header",
+      name: auth.name,
+      value: auth.value,
+      prefix: auth.prefix,
+    }
+  } else if (auth?.type === "bearer") {
+    config.auth = {
+      type: "bearer",
+      token: auth.token,
+    }
+  } else if (authToken) {
+    config.authToken = authToken
+  }
+
+  if (credentials) {
+    config.credentials = credentials
+  }
+
+  return config
 }
 
 /**

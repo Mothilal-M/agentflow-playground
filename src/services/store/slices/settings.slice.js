@@ -1,7 +1,27 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 import { pingBackend, fetchGraphData } from "@api/setup-integration.api"
+import {
+  DEFAULT_SETTINGS,
+  clearCurrentSettings,
+  getCurrentSettings,
+  saveCurrentSettings,
+} from "@/lib/settings-utils"
 import ct from "@constants/"
+
+const createVerificationState = () => ({
+  isVerifying: false,
+  isVerified: false,
+  pingStep: {
+    status: "pending",
+    errorMessage: "",
+  },
+  graphStep: {
+    status: "pending",
+    errorMessage: "",
+  },
+  lastVerificationTime: null,
+})
 
 // Async thunks for API testing
 export const testPingEndpoint = createAsyncThunk(
@@ -31,25 +51,14 @@ export const testGraphEndpoint = createAsyncThunk(
   }
 )
 
+const currentSettings = getCurrentSettings()
+
 const initialState = {
-  name: "",
-  backendUrl: "",
-  authToken: "",
+  ...DEFAULT_SETTINGS,
+  ...currentSettings,
   isBackendConfigured: false,
   graphData: null,
-  verification: {
-    isVerifying: false,
-    isVerified: false,
-    pingStep: {
-      status: "pending",
-      errorMessage: "",
-    },
-    graphStep: {
-      status: "pending",
-      errorMessage: "",
-    },
-    lastVerificationTime: null,
-  },
+  verification: createVerificationState(),
 }
 
 const settingsSlice = createSlice({
@@ -57,20 +66,31 @@ const settingsSlice = createSlice({
   initialState,
   reducers: {
     setSettings: (state, action) => {
-      const { name, backendUrl, authToken } = action.payload
-      state.name = name || ""
-      state.backendUrl = backendUrl || ""
-      state.authToken = authToken || ""
+      const normalizedSettings = saveCurrentSettings(action.payload)
+      state.name = normalizedSettings.name
+      state.backendUrl = normalizedSettings.backendUrl
+      state.authMode = normalizedSettings.authMode
+      state.authToken = normalizedSettings.authToken
+      state.auth = normalizedSettings.auth
+      state.credentials = normalizedSettings.credentials
       state.isBackendConfigured = false
-      // save to local storage
-      localStorage.setItem("backendUrl", state.backendUrl)
-      localStorage.setItem("authToken", state.authToken)
     },
     clearSettings: (state) => {
-      state.name = ""
-      state.backendUrl = ""
-      state.authToken = ""
+      state.name = DEFAULT_SETTINGS.name
+      state.backendUrl = DEFAULT_SETTINGS.backendUrl
+      state.authMode = DEFAULT_SETTINGS.authMode
+      state.authToken = DEFAULT_SETTINGS.authToken
+      state.auth = DEFAULT_SETTINGS.auth
+      state.credentials = DEFAULT_SETTINGS.credentials
       state.isBackendConfigured = false
+      state.graphData = null
+      state.verification = createVerificationState()
+      clearCurrentSettings()
+    },
+    resetVerification: (state) => {
+      state.graphData = null
+      state.isBackendConfigured = false
+      state.verification = createVerificationState()
     },
   },
   extraReducers: (builder) => {
@@ -78,7 +98,7 @@ const settingsSlice = createSlice({
       // Ping endpoint async thunk
       .addCase(testPingEndpoint.pending, (state) => {
         if (!state.verification) {
-          state.verification = initialState.verification
+          state.verification = createVerificationState()
         }
         state.verification.isVerifying = true
         state.verification.pingStep.status = "loading"
@@ -107,6 +127,7 @@ const settingsSlice = createSlice({
         // The response format from client library is { data: {...}, metadata: {...} }
         // We need to extract the graph data
         state.graphData = action.payload.data?.graph || action.payload.data
+        state.isBackendConfigured = true
         state.verification.isVerified =
           state.verification.pingStep.status === "success"
         state.verification.lastVerificationTime = new Date().toISOString()
@@ -122,14 +143,7 @@ const settingsSlice = createSlice({
   },
 })
 
-export const {
-  setSettings,
-  clearSettings,
-  startVerification,
-  setPingStepResult,
-  setGraphStepResult,
-  resetVerification,
-  saveAndVerifySettings,
-} = settingsSlice.actions
+export const { setSettings, clearSettings, resetVerification } =
+  settingsSlice.actions
 
 export default settingsSlice.reducer

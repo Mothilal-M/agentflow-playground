@@ -135,7 +135,7 @@ describe("graph.api", () => {
     })
   })
 
-  it("formats stream chunks and registers the abort listener", async () => {
+  it("returns raw stream chunks and registers the abort listener", async () => {
     streamMock.mockReturnValue(
       (async function* streamSource() {
         yield {
@@ -172,25 +172,18 @@ describe("graph.api", () => {
     )
     expect(chunks).toEqual([
       {
-        data: {
-          message: { delta: "hello", content: "hello" },
-          delta: "hello",
-          metadata: { step: 1 },
-        },
+        event: "message",
+        message: { delta: "hello", content: "hello" },
+        metadata: { step: 1 },
       },
       {
-        data: {
-          state: { running: true },
-          updates: [{ id: 1 }],
-          metadata: {},
-        },
+        event: "updates",
+        state: { running: true },
+        updates: [{ id: 1 }],
       },
       {
-        data: {
-          event: "custom",
-          detail: "done",
-          metadata: {},
-        },
+        event: "custom",
+        detail: "done",
       },
     ])
   })

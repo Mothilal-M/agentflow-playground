@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getCurrentSettings, isBackendConfigured } from "@/lib/settings-utils"
+import {
+  clearCurrentSettings,
+  getCurrentSettings,
+  isBackendConfigured,
+  saveCurrentSettings,
+} from "@/lib/settings-utils"
 
 const SETTINGS_STORAGE_KEY = "pyagenity-settings"
 
@@ -27,7 +32,10 @@ describe("settings-utils", () => {
     expect(getCurrentSettings()).toEqual({
       name: "",
       backendUrl: "",
+      authMode: "none",
       authToken: "",
+      auth: null,
+      credentials: "",
     })
   })
 
@@ -43,7 +51,57 @@ describe("settings-utils", () => {
     expect(getCurrentSettings()).toEqual({
       name: "Workspace",
       backendUrl: "https://example.com",
+      authMode: "none",
       authToken: "",
+      auth: null,
+      credentials: "",
+    })
+  })
+
+  it("normalizes auth-rich settings before saving", () => {
+    const saved = saveCurrentSettings({
+      name: "Workspace",
+      backendUrl: "https://example.com/",
+      authMode: "header",
+      auth: {
+        type: "header",
+        name: " X-API-Key ",
+        value: " secret-key ",
+        prefix: " Token ",
+      },
+      credentials: "include",
+    })
+
+    expect(saved).toEqual({
+      name: "Workspace",
+      backendUrl: "https://example.com/",
+      authMode: "header",
+      authToken: "",
+      auth: {
+        type: "header",
+        name: "X-API-Key",
+        value: "secret-key",
+        prefix: "Token",
+      },
+      credentials: "include",
+    })
+    expect(localStorage.getItem("authToken")).toBeNull()
+  })
+
+  it("falls back to legacy storage keys", () => {
+    localStorage.setItem("backendUrl", "https://example.com")
+    localStorage.setItem("authToken", "legacy-token")
+
+    expect(getCurrentSettings()).toEqual({
+      name: "",
+      backendUrl: "https://example.com",
+      authMode: "bearer",
+      authToken: "legacy-token",
+      auth: {
+        type: "bearer",
+        token: "legacy-token",
+      },
+      credentials: "",
     })
   })
 
@@ -58,8 +116,25 @@ describe("settings-utils", () => {
     expect(getCurrentSettings()).toEqual({
       name: "",
       backendUrl: "",
+      authMode: "none",
       authToken: "",
+      auth: null,
+      credentials: "",
     })
     expect(consoleErrorSpy).toHaveBeenCalledTimes(2)
+  })
+
+  it("clears saved settings and legacy keys", () => {
+    saveCurrentSettings({
+      backendUrl: "https://example.com",
+      authMode: "bearer",
+      authToken: "secret-token",
+    })
+
+    clearCurrentSettings()
+
+    expect(localStorage.getItem(SETTINGS_STORAGE_KEY)).toBeNull()
+    expect(localStorage.getItem("backendUrl")).toBeNull()
+    expect(localStorage.getItem("authToken")).toBeNull()
   })
 })

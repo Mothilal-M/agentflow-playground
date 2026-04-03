@@ -16,6 +16,8 @@ import {
   validateAndNormalizeUrl,
 } from "@/lib/agentflow-client"
 
+const SETTINGS_STORAGE_KEY = "pyagenity-settings"
+
 describe("agentflow-client", () => {
   beforeEach(() => {
     localStorage.clear()
@@ -24,14 +26,23 @@ describe("agentflow-client", () => {
   })
 
   it("creates a client with normalized settings", () => {
-    localStorage.setItem("backendUrl", " https://example.com/ ")
-    localStorage.setItem("authToken", "secret-token")
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        backendUrl: " https://example.com/ ",
+        authMode: "bearer",
+        authToken: "secret-token",
+      })
+    )
 
     const client = getAgentFlowClient()
 
     expect(AgentFlowClientMock).toHaveBeenCalledWith({
       baseUrl: "https://example.com",
-      authToken: "secret-token",
+      auth: {
+        type: "bearer",
+        token: "secret-token",
+      },
       timeout: 600000,
       debug: false,
     })
@@ -39,8 +50,14 @@ describe("agentflow-client", () => {
   })
 
   it("returns the same client instance for repeated calls with unchanged settings", () => {
-    localStorage.setItem("backendUrl", "https://example.com/")
-    localStorage.setItem("authToken", "secret-token")
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        backendUrl: "https://example.com/",
+        authMode: "bearer",
+        authToken: "secret-token",
+      })
+    )
 
     const firstClient = getAgentFlowClient()
     const secondClient = getAgentFlowClient()
@@ -50,24 +67,93 @@ describe("agentflow-client", () => {
   })
 
   it("rebuilds the client when the stored settings change", () => {
-    localStorage.setItem("backendUrl", "https://example.com/")
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        backendUrl: "https://example.com/",
+        authMode: "none",
+      })
+    )
     const firstClient = getAgentFlowClient()
 
-    localStorage.setItem("authToken", "new-token")
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        backendUrl: "https://example.com/",
+        authMode: "header",
+        auth: {
+          type: "header",
+          name: "X-API-Key",
+          value: "new-token",
+        },
+      })
+    )
     const secondClient = getAgentFlowClient()
 
     expect(firstClient).not.toBe(secondClient)
     expect(AgentFlowClientMock).toHaveBeenCalledTimes(2)
   })
 
-  it("omits the auth token when it is missing", () => {
-    localStorage.setItem("backendUrl", "https://example.com/")
+  it("omits auth when it is missing", () => {
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        backendUrl: "https://example.com/",
+      })
+    )
 
     getAgentFlowClient()
 
     expect(AgentFlowClientMock).toHaveBeenCalledWith(
-      expect.objectContaining({ authToken: undefined })
+      expect.not.objectContaining({ auth: expect.anything() })
     )
+  })
+
+  it("builds basic auth and credentials when configured", () => {
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        backendUrl: "https://example.com/",
+        authMode: "basic",
+        auth: {
+          type: "basic",
+          username: "service-user",
+          password: "service-pass",
+        },
+        credentials: "include",
+      })
+    )
+
+    getAgentFlowClient()
+
+    expect(AgentFlowClientMock).toHaveBeenCalledWith({
+      baseUrl: "https://example.com",
+      auth: {
+        type: "basic",
+        username: "service-user",
+        password: "service-pass",
+      },
+      credentials: "include",
+      timeout: 600000,
+      debug: false,
+    })
+  })
+
+  it("falls back to legacy bearer token storage", () => {
+    localStorage.setItem("backendUrl", "https://example.com/")
+    localStorage.setItem("authToken", "secret-token")
+
+    getAgentFlowClient()
+
+    expect(AgentFlowClientMock).toHaveBeenCalledWith({
+      baseUrl: "https://example.com",
+      auth: {
+        type: "bearer",
+        token: "secret-token",
+      },
+      timeout: 600000,
+      debug: false,
+    })
   })
 
   it("throws when the backend URL is not configured", () => {
