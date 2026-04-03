@@ -29,12 +29,12 @@ export const putMessages = async (thread_id, body) => {
  */
 export const listMessages = async (thread_id, parameters = {}) => {
   const client = getAgentFlowClient()
-  const request = {}
-  if (parameters.search !== undefined) request.search = parameters.search
-  if (parameters.offset !== undefined) request.offset = parameters.offset
-  if (parameters.limit !== undefined) request.limit = parameters.limit
-
-  const response = await client.threadMessages(thread_id, request)
+  const response = await client.threadMessages(
+    thread_id,
+    parameters.search,
+    parameters.offset,
+    parameters.limit
+  )
   // Transform to match existing response format
   return {
     data: response.data,

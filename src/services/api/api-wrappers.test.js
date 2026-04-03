@@ -78,11 +78,12 @@ describe("api wrappers", () => {
       config: undefined,
       metadata: { source: "test" },
     })
-    expect(clientMock.threadMessages).toHaveBeenCalledWith("thread-1", {
-      search: "hello",
-      offset: 2,
-      limit: 5,
-    })
+    expect(clientMock.threadMessages).toHaveBeenCalledWith(
+      "thread-1",
+      "hello",
+      2,
+      5
+    )
     expect(clientMock.threadMessage).toHaveBeenCalledWith("thread-1", {
       message_id: "m1",
     })
@@ -140,11 +141,7 @@ describe("api wrappers", () => {
       status: 200,
     })
 
-    expect(clientMock.threads).toHaveBeenCalledWith({
-      search: "weather",
-      offset: 1,
-      limit: 10,
-    })
+    expect(clientMock.threads).toHaveBeenCalledWith("weather", 1, 10)
   })
 
   it("wraps setup integration endpoints", async () => {
