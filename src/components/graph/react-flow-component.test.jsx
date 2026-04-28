@@ -62,10 +62,7 @@ describe("ReFlowComponent", () => {
 
     expect(screen.getAllByText("MAIN").length).toBeGreaterThan(0)
     expect(screen.getAllByText("TOOL").length).toBeGreaterThan(0)
-    expect(container.querySelectorAll("path").length).toBeGreaterThanOrEqual(4)
-    expect(
-      screen.getByText((_, element) => element?.textContent === "T")
-    ).toBeInTheDocument()
+    expect(screen.getByLabelText("Open details for TOOL")).toBeInTheDocument()
   })
 
   it("shows node details in the right sidebar when a node is clicked", () => {

@@ -55,8 +55,8 @@ const ViewGraphSheet = ({ isOpen, onClose }) => {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 h-full relative">
-          <div className="h-full relative">
+        <div className="mt-6">
+          <div className="">
             <ReFlowComponent
               graphData={displayData}
               graphInfo={displayData.info || {}}
