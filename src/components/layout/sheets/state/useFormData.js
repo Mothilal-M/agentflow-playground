@@ -41,6 +41,11 @@ const computeFormData = (stateData, stateSchema) => {
     },
   }
 
+  Object.keys(stateData || {}).forEach((key) => {
+    if (staticFields.includes(key)) return
+    next[key] = stateData[key]
+  })
+
   Object.keys(stateSchema || {}).forEach((key) => {
     if (staticFields.includes(key)) return
     if (stateData?.[key] !== undefined) {
@@ -62,12 +67,15 @@ const useFormData = (stateData, stateSchema = {}) => {
     computeFormData(stateData, stateSchema)
   )
 
+  const stableStateKey = JSON.stringify(stateData || {})
   // Stringify schema to get a stable primitive key (avoids new-reference-each-render issue)
   const stableSchemaKey = JSON.stringify(stateSchema)
 
   useEffect(() => {
-    setFormData(computeFormData(stateData, JSON.parse(stableSchemaKey)))
-  }, [stateData, stableSchemaKey])
+    setFormData(
+      computeFormData(JSON.parse(stableStateKey), JSON.parse(stableSchemaKey))
+    )
+  }, [stableStateKey, stableSchemaKey])
 
   const updateField = (path, value) => {
     setFormData((previousFormData) => {

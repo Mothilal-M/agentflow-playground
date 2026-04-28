@@ -28,23 +28,14 @@ import useFormData from "./useFormData"
 
 const NO_ACTIVE_THREAD_TITLE = "No Active Thread"
 const NO_ACTIVE_THREAD_DESC = "Please select or create a thread first"
-const STATIC_FIELDS = ["context", "context_summary", "execution_meta"]
+const STATIC_FIELDS = ["context", "context_summary", "execution_meta", "state"]
 const DEFAULT_FIELD_DESCRIPTION = "Additional state data field"
 
-const getSchemaFields = (stateSchema) => {
-  if (!stateSchema) {
-    return {
-      dynamicFields: [],
-      getFieldInfo: () => ({
-        title: "",
-        description: DEFAULT_FIELD_DESCRIPTION,
-        type: "string",
-      }),
-    }
-  }
-  const dynamicFields = Object.keys(stateSchema).filter(
-    (key) => !STATIC_FIELDS.includes(key)
-  )
+export const getSchemaFields = (stateSchema = {}, stateData = {}) => {
+  const dynamicFields = [
+    ...new Set([...Object.keys(stateSchema), ...Object.keys(stateData)]),
+  ].filter((key) => !STATIC_FIELDS.includes(key))
+
   const getFieldInfo = (fieldKey) => {
     const fieldSchema = stateSchema[fieldKey]
     if (!fieldSchema) {
@@ -242,7 +233,10 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
     stateData,
     stateSchema
   )
-  const { dynamicFields, getFieldInfo } = getSchemaFields(stateSchema)
+  const { dynamicFields, getFieldInfo } = getSchemaFields(
+    stateSchema,
+    stateData
+  )
   const { handleSyncState, handleSaveState } = useStateActions(
     activeThreadId,
     formData,
