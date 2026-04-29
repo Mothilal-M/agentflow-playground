@@ -329,7 +329,7 @@ const ReFlowComponent = ({ graphData, graphInfo }) => {
               )}
             </Node>
           )}
-          edge={<Edge />}
+          edge={(edgeProps) => <Edge {...edgeProps} />}
         />
       </div>
 
