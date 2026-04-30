@@ -116,6 +116,51 @@ describe("state.slice", () => {
     expect(state.error).toBe("Thread ID is required")
   })
 
+  it("reads nested backend state payloads for fetch and save", async () => {
+    fetchStateMock.mockResolvedValue({
+      data: {
+        state: {
+          context_summary: "Fetched from nested payload",
+          execution_meta: { step: 2, status: "completed" },
+          company_name: "Hire10x AI",
+        },
+        metadata: { message: "OK" },
+      },
+    })
+    putStateMock.mockResolvedValue({
+      data: {
+        state: {
+          context_summary: "Saved from nested payload",
+          execution_meta: { step: 3, status: "completed" },
+          company_name: "Updated Company",
+        },
+        metadata: { message: "OK" },
+      },
+    })
+
+    const store = createStore()
+
+    await store.dispatch(fetchThreadState("thread-1"))
+    let state = store.getState()
+
+    expect(state.state.context_summary).toBe("Fetched from nested payload")
+    expect(state.state.execution_meta.step).toBe(2)
+    expect(state.state.company_name).toBe("Hire10x AI")
+
+    await store.dispatch(
+      updateThreadState({
+        threadId: "thread-1",
+        state: { company_name: "Updated Company" },
+        config: {},
+      })
+    )
+    state = store.getState()
+
+    expect(state.state.context_summary).toBe("Saved from nested payload")
+    expect(state.state.execution_meta.step).toBe(3)
+    expect(state.state.company_name).toBe("Updated Company")
+  })
+
   it("handles thread state update success and failure", async () => {
     putStateMock.mockResolvedValue({
       data: {

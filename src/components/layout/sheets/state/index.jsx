@@ -55,7 +55,52 @@ export const getSchemaFields = (stateSchema = {}, stateData = {}) => {
   return { dynamicFields, getFieldInfo }
 }
 
-const useStateActions = (activeThreadId, formData, dispatch, toast) => {
+const buildStatePayload = (formData = {}) => {
+  const stateToSave = {
+    context: formData.context || [],
+    context_summary: formData.context_summary || "",
+    execution_meta: formData.execution_meta || {},
+  }
+
+  Object.keys(formData).forEach((key) => {
+    if (!STATIC_FIELDS.includes(key)) {
+      stateToSave[key] = formData[key]
+    }
+  })
+
+  return stateToSave
+}
+
+const areValuesEqual = (leftValue, rightValue) =>
+  JSON.stringify(leftValue ?? null) === JSON.stringify(rightValue ?? null)
+
+const buildStatePatch = (currentState = {}, nextState = {}) => {
+  const patch = {}
+  const keys = new Set([
+    ...Object.keys(currentState || {}),
+    ...Object.keys(nextState || {}),
+  ])
+
+  keys.forEach((key) => {
+    if (key === "state") {
+      return
+    }
+
+    if (!areValuesEqual(currentState?.[key], nextState?.[key])) {
+      patch[key] = nextState[key]
+    }
+  })
+
+  return patch
+}
+
+const useStateActions = (
+  activeThreadId,
+  stateData,
+  formData,
+  dispatch,
+  toast
+) => {
   const handleSyncState = async () => {
     if (!activeThreadId) {
       toast({
@@ -90,21 +135,25 @@ const useStateActions = (activeThreadId, formData, dispatch, toast) => {
       return
     }
     try {
-      const stateToSave = {
-        context: formData.context || [],
-        context_summary: formData.context_summary || "",
-        execution_meta: formData.execution_meta || {},
+      const nextState = buildStatePayload(formData)
+      const statePatch = buildStatePatch(stateData, nextState)
+
+      if (Object.keys(statePatch).length === 0) {
+        toast({
+          title: "No Changes",
+          description: "State is already up to date",
+        })
+        return
       }
-      Object.keys(formData).forEach((key) => {
-        if (!STATIC_FIELDS.includes(key)) stateToSave[key] = formData[key]
-      })
+
       await dispatch(
         updateThreadState({
           threadId: activeThreadId,
-          state: stateToSave,
+          state: statePatch,
           config: {},
         })
       ).unwrap()
+      await dispatch(fetchThreadState(activeThreadId)).unwrap()
       toast({
         title: "State Saved",
         description: "Successfully updated state on server",
@@ -239,6 +288,7 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
   )
   const { handleSyncState, handleSaveState } = useStateActions(
     activeThreadId,
+    stateData,
     formData,
     dispatch,
     toast

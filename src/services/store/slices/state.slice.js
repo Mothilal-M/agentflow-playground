@@ -24,11 +24,82 @@ const initialRuntimeState = {
   execution_meta: initialExecutionMeta,
 }
 
+const STATIC_STATE_KEYS = ["context", "context_summary", "execution_meta"]
+
+const getMessageSignature = (message = {}) =>
+  JSON.stringify({
+    message_id: message.message_id ?? null,
+    role: message.role ?? null,
+    timestamp: message.timestamp ?? null,
+    content: message.content ?? null,
+  })
+
+const normalizeContext = (context) => {
+  if (!Array.isArray(context)) {
+    return []
+  }
+
+  const seenMessages = new Set()
+
+  return context.filter((message) => {
+    const signature = getMessageSignature(message)
+
+    if (seenMessages.has(signature)) {
+      return false
+    }
+
+    seenMessages.add(signature)
+    return true
+  })
+}
+
+const extractThreadStatePayload = (payload) => {
+  if (!payload || typeof payload !== "object") {
+    return null
+  }
+
+  if (payload.data?.state && typeof payload.data.state === "object") {
+    return payload.data.state
+  }
+
+  if (payload.data && typeof payload.data === "object") {
+    return payload.data
+  }
+
+  if (payload.state && typeof payload.state === "object") {
+    return payload.state
+  }
+
+  return payload
+}
+
+const replaceStateData = (nextState = {}) => {
+  const normalizedState = {
+    ...initialRuntimeState,
+    context: normalizeContext(nextState.context),
+    context_summary: nextState.context_summary ?? "",
+    execution_meta: {
+      ...initialExecutionMeta,
+      ...(nextState.execution_meta || {}),
+    },
+  }
+
+  Object.keys(nextState).forEach((key) => {
+    if (STATIC_STATE_KEYS.includes(key) || nextState[key] === undefined) {
+      return
+    }
+
+    normalizedState[key] = nextState[key]
+  })
+
+  return normalizedState
+}
+
 const mergeStateData = (currentState, nextState = {}) => ({
   ...currentState,
   ...nextState,
   context: Array.isArray(nextState.context)
-    ? nextState.context
+    ? normalizeContext(nextState.context)
     : currentState.context,
   context_summary: nextState.context_summary ?? currentState.context_summary,
   execution_meta: {
@@ -151,9 +222,9 @@ const stateSlice = createSlice({
         state.error = null
       })
       .addCase(fetchThreadState.fulfilled, (state, action) => {
-        const { data } = action.payload
-        if (data && typeof data === "object") {
-          state.state = mergeStateData(state.state, data)
+        const nextState = extractThreadStatePayload(action.payload)
+        if (nextState && typeof nextState === "object") {
+          state.state = replaceStateData(nextState)
         }
         state.isLoading = false
       })
@@ -168,9 +239,9 @@ const stateSlice = createSlice({
       })
       .addCase(updateThreadState.fulfilled, (state, action) => {
         state.isSaving = false
-        const { data } = action.payload
-        if (data && typeof data === "object") {
-          state.state = mergeStateData(state.state, data)
+        const nextState = extractThreadStatePayload(action.payload)
+        if (nextState && typeof nextState === "object") {
+          state.state = replaceStateData(nextState)
         }
       })
       .addCase(updateThreadState.rejected, (state, action) => {
