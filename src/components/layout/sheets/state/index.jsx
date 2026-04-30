@@ -263,10 +263,7 @@ const ViewStateSheet = ({ isOpen, onClose }) => {
   return (
     <>
       <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent
-          side="right"
-          className="flex flex-col p-0 gap-0 w-[440px] sm:w-[480px]"
-        >
+        <SheetContent side="rightLarge" className="flex flex-col p-0 gap-0">
           <StateSheetHeader
             isLoading={isLoading}
             isSaving={isSaving}
