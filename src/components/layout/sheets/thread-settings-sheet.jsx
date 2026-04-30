@@ -5,6 +5,7 @@ import {
   Wrench,
   Brain,
   Radio,
+  ChevronDown,
 } from "lucide-react"
 import PropTypes from "prop-types"
 import React, { useEffect, useMemo, useState } from "react"
@@ -18,6 +19,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -308,38 +314,34 @@ const MessageBreakdownPanel = ({ overview }) => (
     </p>
     <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-2 text-sm text-slate-600 dark:text-slate-400">
       <div className="space-y-1">
-        <p className="font-medium text-slate-950 dark:text-slate-50">User</p>
-        <p className="text-xs">{overview.userMessages}</p>
+        <p className="font-xs text-slate-950 dark:text-slate-50">
+          User {overview.userMessages}
+        </p>
       </div>
       <div className="space-y-1">
-        <p className="font-medium text-slate-950 dark:text-slate-50">
-          Assistant
+        <p className="font-xs text-slate-950 dark:text-slate-50">
+          Assistant {overview.assistantMessages}
         </p>
-        <p className="text-xs">{overview.assistantMessages}</p>
       </div>
       <div className="space-y-1">
-        <p className="font-medium text-slate-950 dark:text-slate-50">
-          Tool Results
+        <p className="font-xs text-slate-950 dark:text-slate-50">
+          Tool Results {overview.toolResults}
         </p>
-        <p className="text-xs">{overview.toolResults}</p>
       </div>
       <div className="space-y-1">
-        <p className="font-medium text-slate-950 dark:text-slate-50">
-          Total Rows
+        <p className="font-xs text-slate-950 dark:text-slate-50">
+          Total Rows {overview.totalMessages}
         </p>
-        <p className="text-xs">{overview.totalMessages}</p>
       </div>
       <div className="space-y-1">
-        <p className="font-medium text-slate-950 dark:text-slate-50">
-          Config Keys
+        <p className="font-xs text-slate-950 dark:text-slate-50">
+          Config Keys {overview.configKeys}
         </p>
-        <p className="text-xs">{overview.configKeys}</p>
       </div>
       <div className="space-y-1">
-        <p className="font-medium text-slate-950 dark:text-slate-50">
-          Init State Keys
+        <p className="font-xs text-slate-950 dark:text-slate-50">
+          Init State Keys {overview.initStateKeys}
         </p>
-        <p className="text-xs">{overview.initStateKeys}</p>
       </div>
     </div>
   </div>
@@ -349,60 +351,85 @@ MessageBreakdownPanel.propTypes = {
   overview: PropTypes.object.isRequired,
 }
 
-const ThreadOverviewCard = ({ overview, threadSettings }) => (
-  <Card className="rounded-2xl">
-    <CardHeader className="space-y-2 pb-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <CardTitle className="text-2xl">Overview</CardTitle>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline">
-          <Radio className="h-3 w-3" />
-          {threadSettings.streaming_response ? "Streaming on" : "Streaming off"}
-        </Badge>
-        <Badge variant="outline">
-          <Sparkles className="h-3 w-3" />
-          {threadSettings.response_granularity}
-        </Badge>
-        {threadSettings.include_raw && (
-          <Badge variant="outline">Raw enabled</Badge>
-        )}
-      </div>
-      <CardDescription className="text-sm leading-6">
-        Compact thread summary for the current conversation.
-      </CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-        <StatCard
-          label="Messages"
-          value={overview.contextMessages}
-          tone="accent"
-          icon={MessageSquare}
-        />
-        <StatCard
-          label="Tokens"
-          value={overview.contextTokens}
-          tone="accent"
-          icon={Activity}
-        />
-        <StatCard label="Tool Calls" value={overview.toolCalls} icon={Wrench} />
-        <StatCard
-          label="Reasoning"
-          value={overview.reasoningMessages}
-          icon={Brain}
-        />
-      </div>
-      <div className="grid gap-3 rounded-xl border border-slate-200 p-3 dark:border-slate-800 lg:grid-cols-2">
-        <ThreadMetadataPanel
-          overview={overview}
-          threadSettings={threadSettings}
-        />
-        <MessageBreakdownPanel overview={overview} />
-      </div>
-    </CardContent>
-  </Card>
-)
+const ThreadOverviewCard = ({ overview, threadSettings }) => {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <Card className="rounded-2xl">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger className="w-full text-left">
+          <CardHeader className="space-y-2 pb-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/60">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <CardTitle className="text-2xl">Overview</CardTitle>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline">
+                    <Radio className="h-3 w-3" />
+                    {threadSettings.streaming_response
+                      ? "Streaming on"
+                      : "Streaming off"}
+                  </Badge>
+                  <Badge variant="outline">
+                    <Sparkles className="h-3 w-3" />
+                    {threadSettings.response_granularity}
+                  </Badge>
+                  {threadSettings.include_raw && (
+                    <Badge variant="outline">Raw enabled</Badge>
+                  )}
+                </div>
+                <CardDescription className="text-sm leading-6">
+                  Compact thread summary for the current conversation.
+                </CardDescription>
+              </div>
+              <ChevronDown
+                className={`mt-1 h-5 w-5 shrink-0 text-slate-500 transition-transform dark:text-slate-400 ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </div>
+          </CardHeader>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+              <StatCard
+                label="Messages"
+                value={overview.contextMessages}
+                tone="accent"
+                icon={MessageSquare}
+              />
+              <StatCard
+                label="Tokens"
+                value={overview.contextTokens}
+                tone="accent"
+                icon={Activity}
+              />
+              <StatCard
+                label="Tool Calls"
+                value={overview.toolCalls}
+                icon={Wrench}
+              />
+              <StatCard
+                label="Reasoning"
+                value={overview.reasoningMessages}
+                icon={Brain}
+              />
+            </div>
+            <div className="grid gap-3 rounded-xl border border-slate-200 p-3 dark:border-slate-800 lg:grid-cols-2">
+              <ThreadMetadataPanel
+                overview={overview}
+                threadSettings={threadSettings}
+              />
+              <MessageBreakdownPanel overview={overview} />
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  )
+}
 
 ThreadOverviewCard.propTypes = {
   overview: PropTypes.object.isRequired,
@@ -700,8 +727,8 @@ const ThreadSettingsSheet = ({ isOpen, onClose, threadId, threadData }) => {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
-        side="right"
-        className="flex h-full w-[420px] flex-col sm:w-[620px]"
+        side="rightLarge"
+        className="flex flex-col h-full"
         data-testid="thread-settings-sheet"
       >
         <SheetHeader className="flex-shrink-0">
