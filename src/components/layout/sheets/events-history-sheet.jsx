@@ -1,8 +1,14 @@
-import { Activity, Radio, Trash2 } from "lucide-react"
+import { Activity, ChevronDown, Radio, Trash2 } from "lucide-react"
 import PropTypes from "prop-types"
+import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { Button } from "@/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Sheet,
@@ -44,37 +50,56 @@ const getEventTone = (event) => {
   }
 }
 
-const EventEntry = ({ entry }) => (
-  <div className="rounded-2xl border bg-card/80 p-4 shadow-sm">
-    <div className="flex items-start justify-between gap-3">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${getEventTone(entry.event)}`}
-          >
-            {entry.event}
-          </span>
-          {entry.threadId && (
-            <span className="rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
-              Thread {entry.threadId}
+const EventEntry = ({ entry }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const formattedPayload = formatPayload(entry.payload)
+
+  return (
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="overflow-hidden rounded-xl border bg-card/80 shadow-sm"
+    >
+      <CollapsibleTrigger className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-muted/40">
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span
+              className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${getEventTone(entry.event)}`}
+            >
+              {entry.event}
             </span>
-          )}
-          {entry.runId && (
-            <span className="rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
-              Run {entry.runId}
-            </span>
-          )}
+            {entry.threadId && (
+              <span className="max-w-full truncate rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
+                Thread {entry.threadId}
+              </span>
+            )}
+            {entry.runId && (
+              <span className="max-w-full truncate rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
+                Run {entry.runId}
+              </span>
+            )}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {isOpen ? "Hide raw payload" : "View raw payload"}
+          </p>
         </div>
-        <pre className="mt-3 overflow-x-auto rounded-xl border bg-slate-950 p-3 text-xs leading-6 text-slate-100">
-          {formatPayload(entry.payload)}
-        </pre>
-      </div>
-      <p className="shrink-0 text-xs text-muted-foreground">
-        {formatEventTimestamp(entry.timestamp)}
-      </p>
-    </div>
-  </div>
-)
+        <div className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+          <span>{formatEventTimestamp(entry.timestamp)}</span>
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="min-w-0 px-4 pb-4">
+          <pre className="max-w-full overflow-x-hidden whitespace-pre-wrap break-words rounded-lg border bg-slate-950 p-3 text-xs leading-6 text-slate-100">
+            {formattedPayload}
+          </pre>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
 
 EventEntry.propTypes = {
   entry: PropTypes.shape({
@@ -94,10 +119,9 @@ EventEntry.propTypes = {
  */
 const EventsHistorySheet = ({ isOpen, onClose }) => {
   const dispatch = useDispatch()
-  const { entries, isStreaming, activeThreadId } = useSelector((state) => ({
+  const { entries, isStreaming } = useSelector((state) => ({
     entries: state[ct.store.EVENTS_STORE]?.entries || [],
     isStreaming: Boolean(state[ct.store.EVENTS_STORE]?.isStreaming),
-    activeThreadId: state[ct.store.EVENTS_STORE]?.activeThreadId || null,
   }))
 
   const totalEntries = entries.length
@@ -106,17 +130,14 @@ const EventsHistorySheet = ({ isOpen, onClose }) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent
-        side="right"
-        className="w-[420px] sm:w-[600px] flex flex-col h-full"
-      >
+      <SheetContent side="rightLarge" className="flex flex-col overflow-hidden">
         <SheetHeader>
           <SheetTitle>Streaming Events</SheetTitle>
           <SheetDescription>
             Raw backend stream chunks for the active streaming request only.
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-6 grid grid-cols-3 gap-3">
+        <div className="mt-6 grid flex-shrink-0 grid-cols-2 gap-3">
           <div className="rounded-xl border bg-card px-4 py-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               Total
@@ -134,16 +155,8 @@ const EventsHistorySheet = ({ isOpen, onClose }) => {
               <span>{isStreaming ? "Streaming" : "Idle"}</span>
             </div>
           </div>
-          <div className="rounded-xl border bg-card px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              Thread
-            </p>
-            <p className="mt-2 text-sm font-medium text-foreground">
-              {activeThreadId || "--"}
-            </p>
-          </div>
         </div>
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-4 flex flex-shrink-0 items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">
             {latestEvent
               ? `Latest chunk at ${formatEventTimestamp(latestEvent.timestamp)}`
@@ -161,7 +174,7 @@ const EventsHistorySheet = ({ isOpen, onClose }) => {
             Clear log
           </Button>
         </div>
-        <ScrollArea className="mt-4 flex-1 pr-4">
+        <ScrollArea className="mt-4 min-w-0 flex-1 overflow-hidden pr-4">
           {entries.length === 0 ? (
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center rounded-2xl border border-dashed bg-muted/20 px-6 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm">
@@ -176,7 +189,7 @@ const EventsHistorySheet = ({ isOpen, onClose }) => {
               </p>
             </div>
           ) : (
-            <div className="space-y-3 pb-6">
+            <div className="min-w-0 space-y-3 overflow-x-hidden pb-6">
               {entries.map((entry) => (
                 <EventEntry key={entry.id} entry={entry} />
               ))}
