@@ -1,11 +1,7 @@
 /* eslint-disable */
 import {
-  Bot,
-  Send,
-  User,
+  ArrowUp,
   Paperclip,
-  Mic,
-  Video,
   Square,
   Image,
   FileText,
@@ -14,21 +10,18 @@ import {
   Settings,
   AlertCircle,
   AlertTriangle,
+  X,
 } from "lucide-react"
 import PropTypes from "prop-types"
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import ReactMarkdown from "react-markdown"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
-import {
-  oneDark,
-  oneLight,
-} from "react-syntax-highlighter/dist/esm/styles/prism"
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"
 import remarkGfm from "remark-gfm"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Tooltip,
   TooltipContent,
@@ -312,25 +305,13 @@ const Message = ({ message }) => {
           ? "Error"
           : null
   const bubbleClassName = isUser
-    ? "bg-[#f4f4f4] dark:bg-muted font-normal text-foreground"
+    ? "bg-bg-subtle text-fg-primary"
     : isError
-      ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3"
-      : isReasoning
-        ? "bg-muted/30 dark:bg-muted/20 text-muted-foreground border-l-2 border-slate-300 dark:border-slate-700"
-        : isToolCall
-          ? "bg-muted/30 dark:bg-muted/20 text-muted-foreground border-l-2 border-amber-400 dark:border-amber-600"
-          : isToolResult
-            ? "bg-muted/30 dark:bg-muted/20 text-muted-foreground border-l-2 border-orange-400 dark:border-orange-600"
-            : "bg-transparent text-foreground"
-  const avatarClassName = isError
-    ? "from-red-100 to-red-200 dark:from-red-900 dark:to-red-950 text-red-600 dark:text-red-400"
-    : isToolCall
-      ? "from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-950 text-amber-600 dark:text-amber-400"
-      : isToolResult
-        ? "from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-950 text-orange-600 dark:text-orange-400"
-        : isReasoning
-          ? "from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-600 dark:text-slate-400"
-          : "from-blue-600 to-indigo-600 text-white"
+      ? "bg-danger/10 text-danger border border-danger/25 rounded-md px-4 py-3"
+      : "bg-transparent text-fg-primary"
+  const kindChipClassName = isError
+    ? "bg-danger/10 text-danger border border-danger/25"
+    : "bg-bg-subtle text-fg-secondary border border-border-subtle"
 
   const handleCopy = async () => {
     try {
@@ -352,27 +333,37 @@ const Message = ({ message }) => {
 
       if (!inline && language) {
         return (
-          <SyntaxHighlighter
-            style={oneDark}
-            language={language}
-            PreTag="div"
-            className="rounded-md !my-4 !bg-slate-900 dark:!bg-slate-950"
-            customStyle={{
-              margin: "1rem 0",
-              borderRadius: "0.375rem",
-              fontSize: "0.875rem",
-              lineHeight: "1.25rem",
-            }}
-            {...props}
-          >
-            {String(children).replace(/\n$/, "")}
-          </SyntaxHighlighter>
+          <div className="relative my-4 rounded-lg border border-border-subtle bg-bg-subtle overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-subtle">
+              <span className="text-[11px] font-mono font-medium uppercase tracking-wider text-fg-tertiary">
+                {language}
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <SyntaxHighlighter
+                style={oneDark}
+                language={language}
+                PreTag="div"
+                customStyle={{
+                  margin: 0,
+                  padding: "0.875rem 1rem",
+                  background: "transparent",
+                  fontSize: "13px",
+                  lineHeight: "1.55",
+                  fontFamily: "var(--font-mono)",
+                }}
+                {...props}
+              >
+                {String(children).replace(/\n$/, "")}
+              </SyntaxHighlighter>
+            </div>
+          </div>
         )
       }
 
       return (
         <code
-          className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-sm font-mono text-slate-800 dark:text-slate-200"
+          className="font-mono text-[13px] bg-bg-subtle border border-border-subtle px-1 py-0.5 rounded text-fg-primary break-words"
           {...props}
         >
           {children}
@@ -383,134 +374,147 @@ const Message = ({ message }) => {
       return <>{children}</>
     },
     p({ children }) {
-      return <p className="mb-2 last:mb-0">{children}</p>
+      return <p className="mb-3 last:mb-0">{children}</p>
     },
     h1({ children }) {
       return (
-        <h1 className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
+        <h1 className="text-lg font-semibold tracking-tight mb-2 text-fg-primary">
           {children}
         </h1>
       )
     },
     h2({ children }) {
       return (
-        <h2 className="text-base font-bold mb-2 text-slate-900 dark:text-slate-100">
+        <h2 className="text-base font-semibold tracking-tight mb-2 text-fg-primary">
           {children}
         </h2>
       )
     },
     h3({ children }) {
       return (
-        <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-slate-100">
+        <h3 className="text-sm font-semibold mb-1 text-fg-primary">
           {children}
         </h3>
       )
     },
     ul({ children }) {
       return (
-        <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>
+        <ul className="list-disc pl-5 mb-3 space-y-1 marker:text-fg-tertiary">
+          {children}
+        </ul>
       )
     },
     ol({ children }) {
       return (
-        <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>
+        <ol className="list-decimal pl-5 mb-3 space-y-1 marker:text-fg-tertiary">
+          {children}
+        </ol>
       )
     },
     li({ children }) {
-      return <li className="text-sm">{children}</li>
+      return (
+        <li className="text-[14px] sm:text-[15px] leading-relaxed">
+          {children}
+        </li>
+      )
     },
     blockquote({ children }) {
       return (
-        <blockquote className="border-l-4 border-slate-300 dark:border-slate-600 pl-4 italic text-slate-600 dark:text-slate-400 my-2">
+        <blockquote className="border-l-2 border-border-strong pl-4 italic text-fg-secondary my-3">
           {children}
         </blockquote>
       )
     },
     table({ children }) {
       return (
-        <div className="overflow-x-auto my-4">
-          <table className="min-w-full border border-slate-300 dark:border-slate-600">
-            {children}
-          </table>
+        <div className="overflow-x-auto my-4 rounded-md border border-border-subtle">
+          <table className="min-w-full">{children}</table>
         </div>
       )
     },
     thead({ children }) {
-      return <thead className="bg-slate-50 dark:bg-slate-800">{children}</thead>
+      return (
+        <thead className="bg-bg-subtle border-b border-border-subtle">
+          {children}
+        </thead>
+      )
     },
     tbody({ children }) {
       return <tbody>{children}</tbody>
     },
     tr({ children }) {
       return (
-        <tr className="border-b border-slate-200 dark:border-slate-700">
+        <tr className="border-b border-border-subtle last:border-0">
           {children}
         </tr>
       )
     },
     th({ children }) {
       return (
-        <th className="px-3 py-2 text-left text-xs font-medium text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+        <th className="px-3 py-2 text-left text-[11px] font-semibold tracking-[0.06em] uppercase text-fg-tertiary">
           {children}
         </th>
       )
     },
     td({ children }) {
       return (
-        <td className="px-3 py-2 text-sm text-slate-900 dark:text-slate-100">
+        <td className="px-3 py-2 text-[13px] sm:text-[14px] text-fg-primary">
           {children}
         </td>
       )
     },
   }
 
+  const isMetaKind = isReasoning || isToolCall || isToolResult
+
   return (
     <div
-      className={`flex gap-4 py-6 px-4 md:px-6 w-full max-w-4xl mx-auto ${isUser ? "justify-end" : "justify-start"} group transition-colors`}
+      className={`py-4 sm:py-5 px-3 sm:px-6 w-full max-w-[760px] mx-auto group ${isUser ? "flex justify-end" : "block"}`}
     >
-      {!isUser && (
-        <div
-          className={`flex-shrink-0 w-8 h-8 rounded-md bg-gradient-to-br ${avatarClassName} flex items-center justify-center shadow-sm`}
-        >
-          {isError ? (
-            <AlertTriangle className="w-4 h-4 text-current" />
-          ) : (
-            <Bot className="w-5 h-5 text-current opacity-80" />
-          )}
-        </div>
-      )}
       <div
-        className={`flex flex-col flex-1 min-w-0 max-w-[85%] ${isUser ? "items-end" : "items-start"}`}
+        className={`flex flex-col min-w-0 ${isUser ? "items-end max-w-[88%] sm:max-w-[80%]" : "w-full"}`}
       >
         {!isUser && kindLabel && (
-          <div className="mb-1">
+          <div className="mb-2">
             <span
-              className={`inline-flex items-center text-[11px] font-semibold tracking-wider uppercase ${isError ? "text-red-500 dark:text-red-400" : "text-muted-foreground"}`}
+              className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold tracking-[0.04em] uppercase rounded-md px-2 py-0.5 ${kindChipClassName}`}
             >
+              {isError && (
+                <AlertTriangle className="w-3 h-3" strokeWidth={1.75} />
+              )}
               {kindLabel}
             </span>
           </div>
         )}
-        <div className={isUser ? "flex justify-end" : "relative w-full"}>
+        <div className={isUser ? "flex justify-end w-full" : "relative w-full"}>
           <div
-            className={`${isUser ? "rounded-2xl px-5 py-3 shadow-sm max-w-full" : isError ? "" : "py-1"} ${bubbleClassName}`}
+            className={`${
+              isUser
+                ? "rounded-lg px-3.5 sm:px-4 py-2.5 max-w-full"
+                : isError
+                  ? ""
+                  : isMetaKind
+                    ? "border-l-2 border-border-subtle pl-3 sm:pl-4 py-1"
+                    : ""
+            } ${bubbleClassName}`}
           >
-            <div className="text-[15px] leading-relaxed">
+            <div className="text-[14px] sm:text-[15px] leading-relaxed">
               {isUser ? (
                 <div className="space-y-2">
                   {attachments.length > 0 && (
-                    <div className="space-y-2 mb-2">
+                    <div className="space-y-1.5 mb-2">
                       {attachments.map((attachment, idx) => {
                         const isImage =
                           attachment.mime_type?.startsWith("image/")
-                        const isPDF = attachment.mime_type === "application/pdf"
+                        const isPDF =
+                          attachment.mime_type === "application/pdf"
                         if (isImage && attachment.url) {
                           return (
                             <img
                               key={idx}
                               src={attachment.url}
                               alt={attachment.filename || "Attached image"}
-                              className="max-w-xs rounded-lg border border-border/50 shadow-sm"
+                              className="max-w-[14rem] sm:max-w-xs rounded-md border border-border-subtle"
                             />
                           )
                         }
@@ -518,10 +522,13 @@ const Message = ({ message }) => {
                           return (
                             <div
                               key={idx}
-                              className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg border"
+                              className="flex items-center gap-2 px-2.5 py-1.5 bg-bg-surface rounded-md border border-border-subtle"
                             >
-                              <FileText className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm truncate">
+                              <FileText
+                                className="w-4 h-4 text-fg-tertiary flex-shrink-0"
+                                strokeWidth={1.75}
+                              />
+                              <span className="text-[13px] truncate">
                                 {attachment.filename || "document.pdf"}
                               </span>
                             </div>
@@ -530,10 +537,13 @@ const Message = ({ message }) => {
                         return (
                           <div
                             key={idx}
-                            className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg border"
+                            className="flex items-center gap-2 px-2.5 py-1.5 bg-bg-surface rounded-md border border-border-subtle"
                           >
-                            <FileText className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm truncate">
+                            <FileText
+                              className="w-4 h-4 text-fg-tertiary flex-shrink-0"
+                              strokeWidth={1.75}
+                            />
+                            <span className="text-[13px] truncate">
                               {attachment.filename || "file"}
                             </span>
                           </div>
@@ -542,14 +552,17 @@ const Message = ({ message }) => {
                     </div>
                   )}
                   {message.content && (
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    <p className="whitespace-pre-wrap break-words">
+                      {message.content}
+                    </p>
                   )}
                 </div>
               ) : isError ? (
-                <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                <p className="whitespace-pre-wrap text-[13px] sm:text-sm">
+                  {message.content}
+                </p>
               ) : (
-                <div className="prose prose-sm max-w-none dark:prose-invert prose-slate">
-                  {/* Render multimodal content blocks directly when available */}
+                <div className="prose prose-sm max-w-none dark:prose-invert">
                   {Array.isArray(message.rawContent ?? message.content) ? (
                     <MultimodalContent
                       content={message.rawContent ?? message.content}
@@ -570,31 +583,30 @@ const Message = ({ message }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-2 px-2">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 sm:gap-3 mt-1.5 sm:mt-2">
+          <span className="text-[10px] sm:text-[11px] font-medium text-fg-tertiary tabular-nums">
             {new Date(message.timestamp).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </span>
 
-          {/* Action buttons for AI messages - below timestamp */}
           {!isUser && (
-            <div className="flex gap-1 ml-2">
+            <div className="flex items-center gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon-sm"
                       onClick={handleCopy}
-                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
+                      className="h-7 w-7 text-fg-tertiary hover:text-fg-primary hover:bg-bg-subtle"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-3.5 h-3.5" strokeWidth={1.75} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Copy message</p>
+                    <p>Copy</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -606,26 +618,29 @@ const Message = ({ message }) => {
                       <SheetTrigger asChild>
                         <Button
                           variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
+                          size="icon-sm"
+                          className="h-7 w-7 text-fg-tertiary hover:text-fg-primary hover:bg-bg-subtle"
                         >
-                          <Code className="w-3.5 h-3.5" />
+                          <Code className="w-3.5 h-3.5" strokeWidth={1.75} />
                         </Button>
                       </SheetTrigger>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Show raw data</p>
+                      <p>Raw JSON</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
 
-                <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+                <SheetContent
+                  side="right"
+                  className="w-full sm:w-[480px] sm:max-w-[600px] bg-bg-surface"
+                >
                   <SheetHeader>
-                    <SheetTitle>Raw Message Data</SheetTitle>
+                    <SheetTitle>Raw message</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6">
                     <ScrollArea className="h-[calc(100vh-120px)]">
-                      <pre className="text-xs bg-muted/50 p-4 rounded-lg overflow-auto">
+                      <pre className="text-[12px] font-mono bg-bg-subtle border border-border-subtle p-3 sm:p-4 rounded-md overflow-auto">
                         <code>{JSON.stringify(message, null, 2)}</code>
                       </pre>
                     </ScrollArea>
@@ -636,47 +651,22 @@ const Message = ({ message }) => {
           )}
         </div>
       </div>
-
-      {isUser && (
-        <div className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-md bg-muted flex items-center justify-center shadow-sm">
-          <User className="w-5 h-5 text-muted-foreground" />
-        </div>
-      )}
     </div>
   )
 }
 
 /**
- * Modern typing indicator component
+ * Streaming caret indicator — typewriter style.
  */
 const TypingIndicator = () => {
   return (
-    <div className="flex gap-4 py-4 px-4 md:px-6 w-full max-w-4xl mx-auto justify-start group">
-      <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm">
-        <Bot className="w-5 h-5 text-white opacity-80" />
-      </div>
-      <div className="flex flex-col flex-1 min-w-0">
-        <div className="py-2 px-3 bg-muted/40 rounded-xl w-fit">
-          <div className="flex items-center gap-2">
-            <div className="flex space-x-1.5">
-              <div
-                className="w-2 h-2 bg-blue-500/70 rounded-full animate-bounce"
-                style={{ animationDelay: "0ms" }}
-              />
-              <div
-                className="w-2 h-2 bg-blue-500/70 rounded-full animate-bounce"
-                style={{ animationDelay: "150ms" }}
-              />
-              <div
-                className="w-2 h-2 bg-blue-500/70 rounded-full animate-bounce"
-                style={{ animationDelay: "300ms" }}
-              />
-            </div>
-            <span className="text-xs text-muted-foreground animate-pulse font-medium">
-              AI is thinking…
-            </span>
-          </div>
-        </div>
+    <div className="py-3 px-3 sm:px-6 w-full max-w-[760px] mx-auto">
+      <div className="inline-flex items-center gap-2 text-fg-tertiary">
+        <span
+          className="inline-block w-[2px] h-4 bg-fg-primary"
+          style={{ animation: "caret-blink 1.05s ease-out infinite" }}
+        />
+        <span className="text-[12px] font-medium">Thinking…</span>
       </div>
     </div>
   )
@@ -687,31 +677,33 @@ const TypingIndicator = () => {
  */
 const AttachmentPreview = ({ file, onRemove }) => {
   const isImage = file.type.startsWith("image/")
-  const isPDF = file.type === "application/pdf"
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
-      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+    <div className="flex items-center gap-2.5 px-2.5 py-2 bg-bg-subtle rounded-md border border-border-subtle">
+      <div className="w-8 h-8 rounded-md bg-bg-muted flex items-center justify-center flex-shrink-0">
         {isImage ? (
-          <Image className="w-5 h-5 text-slate-600" />
+          <Image className="w-4 h-4 text-fg-tertiary" strokeWidth={1.75} />
         ) : (
-          <FileText className="w-5 h-5 text-slate-600" />
+          <FileText className="w-4 h-4 text-fg-tertiary" strokeWidth={1.75} />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{file.name}</p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[13px] font-medium text-fg-primary truncate leading-tight">
+          {file.name}
+        </p>
+        <p className="text-[11px] text-fg-tertiary mt-0.5">
           {Math.round(file.size / 1024)} KB
         </p>
       </div>
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="icon-sm"
         onClick={() => onRemove(file)}
-        className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+        className="h-7 w-7 text-fg-tertiary hover:bg-danger/10 hover:text-danger"
+        aria-label={`Remove ${file.name}`}
       >
-        ×
+        <X className="w-3.5 h-3.5" strokeWidth={1.75} />
       </Button>
     </div>
   )
@@ -801,21 +793,11 @@ const MessageInput = ({
     setAttachedFiles((previous) => previous.filter((f) => f !== fileToRemove))
   }
 
-  const handleVoiceInput = () => {
-    // Placeholder for voice input functionality
-    console.log("Voice input clicked - to be implemented")
-  }
-
-  const handleVideoInput = () => {
-    // Placeholder for video input functionality
-    console.log("Video input clicked - to be implemented")
-  }
-
   return (
-    <div className="pt-2 pb-4 px-4 bg-transparent w-full max-w-4xl mx-auto">
+    <div className="pt-2 pb-3 sm:pb-4 px-3 sm:px-4 bg-transparent w-full max-w-[760px] mx-auto safe-bottom">
       {/* File previews */}
       {attachedFiles.length > 0 && (
-        <div className="mb-4 space-y-2">
+        <div className="mb-3 space-y-1.5">
           {attachedFiles.map((file, index) => (
             <AttachmentPreview key={index} file={file} onRemove={removeFile} />
           ))}
@@ -824,105 +806,83 @@ const MessageInput = ({
 
       {/* Main input area */}
       <div
-        className={`relative transition-all duration-200 rounded-2xl border bg-background shadow-sm ${
+        className={`relative rounded-xl border bg-bg-surface shadow-soft-sm transition-colors ${
           isDragOver
-            ? "border-primary bg-primary/5 shadow-md"
-            : "border-border/60 hover:border-border focus-within:border-border focus-within:ring-1 focus-within:ring-ring"
+            ? "border-accent bg-accent/5"
+            : "border-border-subtle focus-within:border-border-strong"
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="p-0">
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-2 p-2 w-full"
-          >
-            {/* Text input */}
-            <div className="flex-1 relative w-full px-2 pt-2">
-              <textarea
-                ref={textareaRef}
-                value={message}
-                onChange={handleTextareaChange}
-                onKeyDown={handleKeyDown}
-                placeholder={
-                  isDragOver
-                    ? "Drop files here..."
-                    : "Message AgentFlow Workbench..."
-                }
-                disabled={disabled}
-                className="w-full resize-none border-0 bg-transparent text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] max-h-[200px]"
-                rows={1}
-              />
+        <form onSubmit={handleSubmit} className="flex flex-col w-full">
+          <div className="px-3.5 sm:px-4 pt-3.5">
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={handleTextareaChange}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                isDragOver ? "Drop files here…" : "Reply to thread…"
+              }
+              disabled={disabled}
+              className="w-full resize-none border-0 bg-transparent text-[15px] leading-relaxed text-fg-primary placeholder:text-fg-tertiary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] max-h-[200px]"
+              rows={1}
+            />
+          </div>
+
+          <div className="flex items-center justify-between px-2 pb-2 pt-1 gap-2">
+            <div className="flex items-center">
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-9 w-9 sm:h-8 sm:w-8 text-fg-tertiary hover:text-fg-secondary hover:bg-bg-subtle"
+                      aria-label="Attach files"
+                    >
+                      <Paperclip className="w-4 h-4" strokeWidth={1.75} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Attach files</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
-            <div className="flex items-center justify-between w-full pb-1 px-1">
-              {/* Attachment controls */}
-              <div className="flex items-center gap-0.5">
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-                      >
-                        <Paperclip className="w-4 h-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">Attach files</TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleVoiceInput}
-                        className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-                      >
-                        <Mic className="w-4 h-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      Voice input (coming soon)
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-
-              {/* Send/Stop button */}
-              <div className="flex items-center pr-1">
-                {isGenerating ? (
-                  <Button
-                    type="button"
-                    onClick={onStopGeneration}
-                    size="icon"
-                    className="h-8 w-8 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20"
-                    title="Stop generation"
-                  >
-                    <Square className="h-3 w-3 fill-current" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    size="icon"
-                    disabled={
-                      (!message.trim() && attachedFiles.length === 0) ||
-                      disabled
-                    }
-                    className="h-8 w-8 rounded-full animate-in fade-in zoom-in bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-fg-tertiary font-medium hidden sm:inline">
+                <kbd className="font-mono font-medium">⏎</kbd> to send
+              </span>
+              {isGenerating ? (
+                <Button
+                  type="button"
+                  onClick={onStopGeneration}
+                  size="icon-sm"
+                  className="h-9 w-9 sm:h-8 sm:w-8 rounded-full bg-bg-subtle text-fg-primary hover:bg-bg-muted border border-border-subtle"
+                  title="Stop generation"
+                  aria-label="Stop generation"
+                >
+                  <Square className="h-3 w-3 fill-current" strokeWidth={1.75} />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  size="icon-sm"
+                  disabled={
+                    (!message.trim() && attachedFiles.length === 0) || disabled
+                  }
+                  className="h-9 w-9 sm:h-8 sm:w-8 rounded-full bg-fg-primary text-bg-canvas hover:bg-fg-primary/90 disabled:bg-bg-muted disabled:text-fg-disabled"
+                  aria-label="Send message"
+                >
+                  <ArrowUp className="h-4 w-4" strokeWidth={2} />
+                </Button>
+              )}
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
 
       {/* Hidden file input */}
@@ -934,14 +894,6 @@ const MessageInput = ({
         onChange={handleFileInputChange}
         className="hidden"
       />
-
-      {isDragOver && (
-        <div className="absolute inset-0 bg-blue-500/10 border-2 border-dashed border-blue-400 rounded-lg flex items-center justify-center pointer-events-none">
-          <div className="text-blue-600 font-medium">
-            Drop files here to attach
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -977,22 +929,23 @@ const MessageView = ({ thread, disabled = false }) => {
     <div className="flex flex-col h-full">
       {/* Warning banner when disabled */}
       {disabled && (
-        <div className="flex-shrink-0 p-3 bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800">
-          <div className="flex items-start gap-2 max-w-4xl mx-auto">
-            <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-amber-800 dark:text-amber-200">
-              <p className="font-medium mb-1">
-                Backend URL is not configured properly
-              </p>
-              <p className="text-xs">
-                Use{" "}
-                <code className="bg-amber-100 dark:bg-amber-900 px-1.5 py-0.5 rounded">
-                  ?backendUrl=YOUR_URL
-                </code>{" "}
-                in the URL or click the{" "}
-                <Settings className="h-3 w-3 inline mx-0.5" /> Settings icon to
-                configure
-              </p>
+        <div className="flex-shrink-0 px-3 sm:px-4 py-2.5 bg-warning/10 dark:bg-warning/15 border-b border-warning/25">
+          <div className="flex items-start gap-2.5 max-w-[760px] mx-auto">
+            <AlertCircle
+              className="h-4 w-4 text-warning mt-0.5 flex-shrink-0"
+              strokeWidth={1.75}
+            />
+            <div className="text-[12px] sm:text-[13px] text-fg-secondary leading-relaxed">
+              <span className="font-medium text-fg-primary">
+                Backend not configured.
+              </span>{" "}
+              Add{" "}
+              <code className="font-mono text-[12px] bg-bg-subtle border border-border-subtle px-1 py-0.5 rounded text-fg-secondary">
+                ?backendUrl=YOUR_URL
+              </code>{" "}
+              or open{" "}
+              <Settings className="h-3 w-3 inline mx-0.5" strokeWidth={1.75} />
+              Settings.
             </div>
           </div>
         </div>

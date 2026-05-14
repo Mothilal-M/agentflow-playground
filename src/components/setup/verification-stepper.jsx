@@ -28,14 +28,14 @@ const VerificationStep = ({
   const getStatusIcon = () => {
     switch (status) {
       case StepStatus.LOADING:
-        return <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+        return <Loader2 className="h-5 w-5 text-accent animate-spin" />
       case StepStatus.SUCCESS:
-        return <CheckCircle className="h-5 w-5 text-green-500" />
+        return <CheckCircle className="h-5 w-5 text-success" />
       case StepStatus.ERROR:
-        return <XCircle className="h-5 w-5 text-red-500" />
+        return <XCircle className="h-5 w-5 text-danger" />
       default:
         return (
-          <div className="h-5 w-5 rounded-full border-2 border-gray-300 bg-white" />
+          <div className="h-5 w-5 rounded-full border-2 border-border-strong bg-bg-canvas" />
         )
     }
   }
@@ -43,13 +43,13 @@ const VerificationStep = ({
   const getStatusColor = () => {
     switch (status) {
       case StepStatus.LOADING:
-        return "border-blue-500"
+        return "border-accent"
       case StepStatus.SUCCESS:
-        return "border-green-500"
+        return "border-success"
       case StepStatus.ERROR:
-        return "border-red-500"
+        return "border-danger"
       default:
-        return "border-gray-300"
+        return "border-border-strong"
     }
   }
 
@@ -63,7 +63,7 @@ const VerificationStep = ({
         {!isLast && (
           <div
             className={`w-0.5 h-12 mt-2 ${
-              status === StepStatus.SUCCESS ? "bg-green-500" : "bg-gray-300"
+              status === StepStatus.SUCCESS ? "bg-success" : "bg-border-strong"
             }`}
           />
         )}
@@ -73,21 +73,15 @@ const VerificationStep = ({
       <div className="flex-1 min-w-0">
         <h3
           className={`font-medium ${
-            status === StepStatus.ERROR
-              ? "text-red-700 dark:text-red-400"
-              : "text-gray-900 dark:text-gray-100"
+            status === StepStatus.ERROR ? "text-danger" : "text-fg-primary"
           }`}
         >
           {title}
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {description}
-        </p>
+        <p className="text-sm text-fg-tertiary mt-1">{description}</p>
         {status === StepStatus.ERROR && errorMessage && (
-          <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-            <p className="text-sm text-red-700 dark:text-red-400">
-              {errorMessage}
-            </p>
+          <div className="mt-2 p-2 bg-danger/10 border border-danger/25 rounded-md">
+            <p className="text-sm text-danger">{errorMessage}</p>
           </div>
         )}
       </div>

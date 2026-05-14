@@ -1,9 +1,7 @@
-import { Send, Paperclip, Image, FileText, X } from "lucide-react"
+import { ArrowUp, Paperclip, Image, FileText, X } from "lucide-react"
 import PropTypes from "prop-types"
 
-import { ShineBorder } from "@/components/magicui/shine-border"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 
 const FilePreview = ({ file, handleRemove }) => {
   const isImage = file.type.startsWith("image/")
@@ -11,28 +9,31 @@ const FilePreview = ({ file, handleRemove }) => {
   const handleRemoveClick = () => handleRemove(file)
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg border">
-      <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+    <div className="flex items-center gap-2.5 px-2.5 py-2 bg-bg-subtle rounded-md border border-border-subtle">
+      <div className="w-7 h-7 rounded-md bg-bg-muted flex items-center justify-center flex-shrink-0">
         {isImage ? (
-          <Image className="w-4 h-4 text-muted-foreground" />
+          <Image className="w-3.5 h-3.5 text-fg-tertiary" strokeWidth={1.75} />
         ) : (
-          <FileText className="w-4 h-4 text-muted-foreground" />
+          <FileText className="w-3.5 h-3.5 text-fg-tertiary" strokeWidth={1.75} />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium truncate">{file.name}</p>
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-[13px] font-medium text-fg-primary truncate leading-tight">
+          {file.name}
+        </p>
+        <p className="text-[11px] text-fg-tertiary mt-0.5">
           {Math.round(file.size / 1024)} KB
         </p>
       </div>
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="icon-sm"
         onClick={handleRemoveClick}
-        className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
+        className="h-7 w-7 text-fg-tertiary hover:bg-danger/10 hover:text-danger"
+        aria-label={`Remove ${file.name}`}
       >
-        <X className="w-3 h-3" />
+        <X className="w-3.5 h-3.5" strokeWidth={1.75} />
       </Button>
     </div>
   )
@@ -55,20 +56,14 @@ const EmptyInputCard = ({
 }) => {
   const handleSubmit = onHandleSubmit
   const handleFileChange = onHandleFileChange
-  // file attach is handled via the hidden input label
+
   return (
-    <div className="w-full h-full flex items-center justify-center px-2">
-      <Card className="relative w-full max-w-xl mx-auto shadow-xl rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm">
-        <ShineBorder
-          shineColor={["#60A5FA", "#8B5CF6", "#F59E0B"]}
-          borderWidth={1}
-          duration={8}
-          className="rounded-2xl pointer-events-none"
-        />
-        <form onSubmit={handleSubmit} className="relative z-10 h-full">
-          <CardContent className="p-2 flex flex-col gap-2">
+    <div className="w-full flex items-center justify-center">
+      <div className="relative w-full max-w-2xl mx-auto rounded-xl border border-border-subtle bg-bg-surface shadow-soft-sm focus-within:border-border-strong transition-colors">
+        <form onSubmit={handleSubmit} className="relative">
+          <div className="flex flex-col">
             {attachedFiles.length > 0 && (
-              <div className="space-y-1 mb-1">
+              <div className="px-3 pt-3 space-y-1.5">
                 {attachedFiles.map((file) => (
                   <FilePreview
                     key={`${file.name}-${file.size}`}
@@ -83,11 +78,11 @@ const EmptyInputCard = ({
               onChange={(event) => setMessage(event.target.value)}
               placeholder={
                 disabled
-                  ? "Backend URL not verified. Configure in Settings to start chatting..."
-                  : "Type your message here to start a new chat..."
+                  ? "Backend URL not configured. Open Settings to connect…"
+                  : "Ask anything, or paste a prompt to start a thread…"
               }
               disabled={disabled}
-              className="w-full bg-background min-h-[120px] max-h-[28vh] px-4 py-3 border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground text-base leading-relaxed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-transparent min-h-[96px] max-h-[28vh] px-3.5 sm:px-4 pt-3.5 pb-2 resize-none focus:outline-none placeholder:text-fg-tertiary text-[15px] leading-relaxed text-fg-primary disabled:opacity-50 disabled:cursor-not-allowed"
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey && !disabled) {
                   event.preventDefault()
@@ -95,12 +90,12 @@ const EmptyInputCard = ({
                 }
               }}
             />
-            <div className="flex items-center justify-between pt-1 border-t border-border bg-transparent">
+            <div className="flex items-center justify-between px-2 pb-2 pt-1 gap-2">
               <label
-                className={`pl-2 rounded-md transition flex items-center gap-2 ${
+                className={`inline-flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-colors text-fg-tertiary min-h-[36px] ${
                   disabled
                     ? "cursor-not-allowed opacity-50"
-                    : "cursor-pointer hover:bg-blue-950/30"
+                    : "cursor-pointer hover:bg-bg-subtle hover:text-fg-secondary"
                 }`}
               >
                 <input
@@ -112,24 +107,26 @@ const EmptyInputCard = ({
                   disabled={disabled}
                   className="hidden"
                 />
-                <Paperclip className="w-5 h-5 text-blue-400" />
-                <span className="text-xs text-muted-foreground">Attach</span>
+                <Paperclip className="w-4 h-4" strokeWidth={1.75} />
+                <span className="text-[13px] font-medium hidden sm:inline">
+                  Attach
+                </span>
               </label>
               <Button
                 type="submit"
-                size="md"
+                size="icon-sm"
                 disabled={
                   (!message.trim() && attachedFiles.length === 0) || disabled
                 }
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow transition-colors flex items-center gap-2 text-base font-semibold disabled:opacity-50"
+                className="h-9 w-9 sm:h-8 sm:w-8 rounded-full p-0 bg-fg-primary text-bg-canvas hover:bg-fg-primary/90 disabled:bg-bg-muted disabled:text-fg-disabled"
+                aria-label="Send message"
               >
-                <Send className="w-5 h-5" />
-                Send
+                <ArrowUp className="w-4 h-4" strokeWidth={2} />
               </Button>
             </div>
-          </CardContent>
+          </div>
         </form>
-      </Card>
+      </div>
     </div>
   )
 }
@@ -141,7 +138,6 @@ EmptyInputCard.propTypes = {
   onHandleFileChange: PropTypes.func,
   attachedFiles: PropTypes.array,
   onRemoveFile: PropTypes.func,
-  // ref can be a callback or an object created by useRef
   fileInputReference: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   disabled: PropTypes.bool,
 }

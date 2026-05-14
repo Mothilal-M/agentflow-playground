@@ -7,10 +7,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-/**
- * DevelopmentToolButton component renders a development tool button with tooltip
- * @returns {object} Development tool button with icon and tooltip
- */
 const DevelopmentToolButton = ({
   icon: Icon,
   tooltip,
@@ -26,17 +22,21 @@ const DevelopmentToolButton = ({
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
+          size="icon-sm"
           onClick={handleClick}
           disabled={disabled}
-          className={`h-8 w-8 p-0 text-muted-foreground transition-colors ${
+          className={`h-8 w-8 p-0 transition-colors ${
             disabled
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-accent hover:text-accent-foreground"
-          } ${isActive && !disabled ? "bg-accent text-accent-foreground" : ""}`}
+              ? "text-fg-disabled opacity-50 cursor-not-allowed"
+              : "text-fg-tertiary hover:bg-bg-subtle hover:text-fg-primary"
+          } ${
+            isActive && !disabled
+              ? "bg-bg-subtle text-fg-primary"
+              : ""
+          }`}
           aria-label={tooltip}
         >
-          {text} <Icon className="h-[18px] w-[18px]" />
+          {text} <Icon className="h-4 w-4" strokeWidth={1.75} />
         </Button>
       </TooltipTrigger>
       <TooltipContent>

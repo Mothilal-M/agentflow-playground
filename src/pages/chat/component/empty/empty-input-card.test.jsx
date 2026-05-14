@@ -23,7 +23,7 @@ describe("EmptyInputCard", () => {
     render(<EmptyInputCard {...defaultProps} />)
 
     expect(
-      screen.getByPlaceholderText(/type your message/i)
+      screen.getByPlaceholderText(/ask anything/i)
     ).toBeInTheDocument()
     expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument()
   })
@@ -51,7 +51,7 @@ describe("EmptyInputCard", () => {
     render(<EmptyInputCard {...defaultProps} disabled />)
 
     expect(
-      screen.getByPlaceholderText(/backend url not verified/i)
+      screen.getByPlaceholderText(/backend url not configured/i)
     ).toBeDisabled()
     expect(screen.getByRole("button", { name: /send/i })).toBeDisabled()
   })
@@ -111,7 +111,7 @@ describe("EmptyInputCard", () => {
       />
     )
 
-    const removeButton = screen.getByRole("button", { name: "" })
+    const removeButton = screen.getByRole("button", { name: /remove/i })
     fireEvent.click(removeButton)
 
     expect(onRemoveFile).toHaveBeenCalledWith(mockFile)

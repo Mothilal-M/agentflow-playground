@@ -20,17 +20,24 @@ const ModeToggle = () => {
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Button
-            className="rounded-full w-8 h-8 bg-background"
-            variant="outline"
-            size="icon"
+            variant="ghost"
+            size="icon-sm"
+            className="relative h-8 w-8 text-fg-tertiary hover:text-fg-primary hover:bg-bg-subtle"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label="Switch theme"
           >
-            <SunIcon className="w-[1.2rem] h-[1.2rem] rotate-90 scale-0 transition-transform ease-in-out duration-500 dark:rotate-0 dark:scale-100" />
-            <MoonIcon className="absolute w-[1.2rem] h-[1.2rem] rotate-0  transition-transform ease-in-out duration-500 dark:-rotate-90 dark:scale-0" />
-            <span className="sr-only">Switch Theme</span>
+            <SunIcon
+              className="h-4 w-4 rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
+              strokeWidth={1.75}
+            />
+            <MoonIcon
+              className="absolute h-4 w-4 rotate-0 transition-transform duration-300 dark:-rotate-90 dark:scale-0"
+              strokeWidth={1.75}
+            />
+            <span className="sr-only">Switch theme</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">Switch Theme</TooltipContent>
+        <TooltipContent side="bottom">Switch theme</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )
